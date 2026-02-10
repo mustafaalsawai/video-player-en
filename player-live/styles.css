@@ -227,7 +227,7 @@ video[controls]::-webkit-media-controls {
   align-items: center;
   gap: 8px;
 }
-title-icon {
+.title-icon {
   display: flex;
   align-items: center;
   justify-content: center;
