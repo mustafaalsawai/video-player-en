@@ -721,10 +721,10 @@ video[controls]::-webkit-media-controls {
   leading-trim: both;
   text-edge: cap;
   font-family: var(--font);
-  font-size: var(--font-label-md-text-size, 14px);
+  font-size: 18px;
   font-style: normal;
   font-weight: 500;
-  line-height: var(--font-label-md-line-height, 20px);
+  line-height: 24px;
   white-space: nowrap;
   order: 2;
 }
@@ -1066,7 +1066,7 @@ video[controls]::-webkit-media-controls {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 96px;
+  bottom: 84px;
   padding: 0 0 24px;
   z-index: 40;
   opacity: 0;
@@ -1098,25 +1098,44 @@ video[controls]::-webkit-media-controls {
 .more-panel-header {
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   text-align: right;
   padding-inline: 24px;
+  gap: 12px;
 }
 
-.more-panel-title {
+.more-btn {
+  display: flex;
+  min-width: 160px;
+  padding: var(--spacing-md, 12px) var(--spacing-5xl, 36px);
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  border: none;
+  border-radius: var(--radius-full, 512px);
+  font-family: var(--font-family-sans, "Thmanyah sans 1.2");
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.more-btn-primary {
+  background: var(--components-button-secondary-btn-secondary-bg, #fff);
+  color: #111;
+}
+
+.more-btn-secondary {
+  background: var(--components-button-tertiary-btn-tertiary-bg, rgba(255, 255, 255, 0.12));
+  backdrop-filter: blur(10px);
   color: var(--white);
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.2;
-  width: 100%;
-  text-align: right;
 }
 
 .more-cards {
   display: flex;
   gap: 20px;
   overflow-x: auto;
-  padding-bottom: 20px;
+  padding-bottom: 32px;
   padding-inline: 24px;
 }
 
@@ -1145,12 +1164,34 @@ video[controls]::-webkit-media-controls {
   padding: var(--spacing-sm, 8px);
   justify-content: flex-end;
   align-items: flex-start;
+  position: relative;
   aspect-ratio: 151/85;
   border-radius: var(--radius-3xl, 24px);
   border: 1px solid var(--border-border-tertiary, rgba(255, 255, 255, 0.12));
   background: var(--card-img) lightgray 50% / cover no-repeat;
   background-origin: border-box;
   background-clip: border-box;
+}
+
+.live-badge {
+  display: none;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 12px);
+  justify-content: center;
+  align-items: center;
+  border-radius: 768px;
+  background: var(--background-accent-bg-red, #ef4632);
+  color: #fff;
+  font-family: var(--font-family-sans, "Thmanyah sans 1.2");
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.more-panel[data-mode="live"] .live-badge {
+  display: flex;
 }
 
 .more-card-meta {
