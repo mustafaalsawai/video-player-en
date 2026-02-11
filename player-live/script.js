@@ -17,6 +17,8 @@ const progressPreviewTime = document.getElementById('progressPreviewTime');
 const liveBtn = document.getElementById('liveBtn');
 const liveBtnText = document.getElementById('liveBtnText');
 const liveBtnDot = document.getElementById('liveBtnDot');
+const moreBtn = document.getElementById('moreBtn');
+const morePanel = document.getElementById('morePanel');
 const fsBtn = document.getElementById('fsBtn');
 const pipBtn = document.getElementById('pipBtn');
 const centerPlay = document.getElementById('centerPlay');
@@ -91,7 +93,7 @@ forwardBtn.addEventListener('click', () => {
 
 // ===== PLAY / PAUSE =====
 function showFeedback(isPause) {
-    centerFeedbackIcon.innerHTML = isPause 
+    centerFeedbackIcon.innerHTML = isPause
         ? '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M18 6.5C18.8284 6.5 19.5 7.17157 19.5 8V40C19.5 40.8284 18.8284 41.5 18 41.5C17.1716 41.5 16.5 40.8284 16.5 40V8C16.5 7.17157 17.1716 6.5 18 6.5Z" fill="white"/><path d="M30 6.5C30.8284 6.5 31.5 7.17157 31.5 8V40C31.5 40.8284 30.8284 41.5 30 41.5C29.1716 41.5 28.5 40.8284 28.5 40V8C28.5 7.17157 29.1716 6.5 30 6.5Z" fill="white"/></svg>'
         : '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M16.6276 8.73766L36.3703 21.0311C36.9154 21.3714 37.364 21.8459 37.6732 22.4091C37.9825 22.9724 38.142 23.6056 38.1365 24.2481C38.131 24.8907 37.9607 25.5211 37.6419 26.079C37.3231 26.6369 36.8665 27.1036 36.3157 27.4345L16.5757 39.2938C16.0057 39.6362 15.355 39.821 14.6902 39.8295C14.0254 39.838 13.3702 39.6698 12.7917 39.342C12.2132 39.0143 11.7321 38.5389 11.3975 37.9643C11.063 37.3897 10.8871 36.7365 10.8877 36.0716V11.9216C10.8882 11.2521 11.0678 10.5949 11.4077 10.0182C11.7476 9.44139 12.2356 8.966 12.8211 8.64124C13.4065 8.31648 14.0682 8.15417 14.7374 8.17113C15.4067 8.18808 16.0593 8.38368 16.6276 8.73766Z" fill="white"/></svg>';
     centerFeedbackIcon.classList.add('show');
@@ -102,7 +104,7 @@ function showFeedback(isPause) {
 
 function togglePlay() {
     if (video.paused) {
-        video.play().catch(() => {});
+        video.play().catch(() => { });
         showFeedback(true);
     } else {
         video.pause();
@@ -133,15 +135,36 @@ liveBtn.addEventListener('click', () => {
 
 // ===== VOLUME =====
 function updateVolBg() {
-    const v = volSlider.value * 100;
-    volSlider.style.background = `linear-gradient(to right, #fff ${v}%, rgba(255,255,255,0.2) ${v}%)`;
+    const v = parseFloat(volSlider.value);
+    if (v <= 0) {
+        volSlider.style.background = 'rgba(255,255,255,0.2)';
+        return;
+    }
+    if (v >= 1) {
+        volSlider.style.background = '#fff';
+        return;
+    }
+    const p = v * 100;
+    volSlider.style.background = `linear-gradient(to right, #fff ${p}%, rgba(255,255,255,0.2) ${p}%)`;
 }
 
 function toggleMute() {
     isMuted = !isMuted;
     const on = volumeBtn.querySelector('.icon-vol-on'), off = volumeBtn.querySelector('.icon-vol-off');
-    if (isMuted) { prevVol = parseFloat(volSlider.value); volSlider.value = 0; video.muted = true; on.style.display = 'none'; off.style.display = ''; }
-    else { volSlider.value = prevVol; video.muted = false; on.style.display = ''; off.style.display = 'none'; }
+    if (isMuted) {
+        prevVol = parseFloat(volSlider.value);
+        volSlider.value = 0;
+        video.volume = 0;
+        video.muted = true;
+        on.style.display = 'none';
+        off.style.display = '';
+    } else {
+        volSlider.value = prevVol;
+        video.volume = prevVol;
+        video.muted = false;
+        on.style.display = '';
+        off.style.display = 'none';
+    }
     updateVolBg();
 }
 
@@ -229,8 +252,8 @@ function seekTo(e) {
 }
 // ===== FULLSCREEN =====
 function toggleFS() {
-    if (!document.fullscreenElement) player.requestFullscreen().catch(() => {});
-    else document.exitFullscreen().catch(() => {});
+    if (!document.fullscreenElement) player.requestFullscreen().catch(() => { });
+    else document.exitFullscreen().catch(() => { });
 }
 fsBtn.addEventListener('click', toggleFS);
 document.addEventListener('fullscreenchange', () => {
@@ -249,17 +272,19 @@ pipBtn.addEventListener('click', async () => {
 
 // ===== POPOVER LOGIC =====
 const qualityPopover = document.getElementById('qualityPopover');
-//const audioPopover = document.getElementById('audioPopover');
+const commentatorPopover = document.getElementById('commentatorPopover');
 const qualityAnchor = document.getElementById('qualityAnchor');
-//const audioAnchor = document.getElementById('audioAnchor');
+const commentatorAnchor = document.getElementById('commentatorAnchor');
 let qualityHideTimer = null;
-let audioHideTimer = null;
+let commentatorHideTimer = null;
 
 // تحديث وظائف القوائم للتحكم في ظهور شريط التقدم
 function showPopover(popover) {
-   
+    if (morePanel.classList.contains('show')) {
+        closeMorePanel();
+    }
     popover.classList.add('show');
-    
+
     // إضافة الكلاس الذي يخفي شريط التقدم
     player.classList.add('popover-open');
 }
@@ -267,9 +292,9 @@ function showPopover(popover) {
 function closePopover(popover, timer) {
     clearTimeout(timer);
     popover.classList.remove('show');
-    
+
     // إذا أغلقت كل القوائم، نعيد شريط التقدم
-    if (!qualityPopover.classList.contains('show')) {
+    if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show') && !morePanel.classList.contains('show')) {
         player.classList.remove('popover-open');
     }
 }
@@ -287,6 +312,40 @@ qualityAnchor.addEventListener('mouseleave', () => { qualityHideTimer = setTimeo
 qualityPopover.addEventListener('mouseenter', () => { clearTimeout(qualityHideTimer); });
 qualityPopover.addEventListener('mouseleave', () => { qualityHideTimer = setTimeout(() => closePopover(qualityPopover, qualityHideTimer), 200); });
 
+// Commentator popover hover
+commentatorAnchor.addEventListener('mouseenter', () => { clearTimeout(commentatorHideTimer); showPopover(commentatorPopover); });
+commentatorAnchor.addEventListener('mouseleave', () => { commentatorHideTimer = setTimeout(() => closePopover(commentatorPopover, commentatorHideTimer), 200); });
+commentatorPopover.addEventListener('mouseenter', () => { clearTimeout(commentatorHideTimer); });
+commentatorPopover.addEventListener('mouseleave', () => { commentatorHideTimer = setTimeout(() => closePopover(commentatorPopover, commentatorHideTimer), 200); });
+
+function selectCommentator(el) {
+    document.querySelectorAll('#commentatorPopover .popover-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+}
+
+// ===== MORE PANEL =====
+function showMorePanel() {
+    morePanel.classList.add('show');
+    morePanel.setAttribute('aria-hidden', 'false');
+    player.classList.add('popover-open', 'more-open');
+    player.classList.remove('controls-hidden', 'hide-cursor');
+    clearTimeout(hideTimer);
+}
+
+function closeMorePanel() {
+    morePanel.classList.remove('show');
+    morePanel.setAttribute('aria-hidden', 'true');
+    player.classList.remove('more-open');
+    if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show')) {
+        player.classList.remove('popover-open');
+    }
+}
+
+function toggleMorePanel() {
+    if (morePanel.classList.contains('show')) closeMorePanel();
+    else showMorePanel();
+}
+
 // Audio popover hover
 // audioAnchor.addEventListener('mouseenter', () => { clearTimeout(audioHideTimer); showPopover(audioPopover); });
 // audioAnchor.addEventListener('mouseleave', () => { audioHideTimer = setTimeout(() => closePopover(audioPopover, audioHideTimer), 200); });
@@ -294,20 +353,18 @@ qualityPopover.addEventListener('mouseleave', () => { qualityHideTimer = setTime
 // audioPopover.addEventListener('mouseleave', () => { audioHideTimer = setTimeout(() => closePopover(audioPopover, audioHideTimer), 200); });
 
 // Selection functions
-function selectQuality(el) {
-    document.querySelectorAll('#qualityPopover .popover-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
-}
-
-function selectAudio(el) {
-    document.querySelectorAll('#audioPopover .popover-body .popover-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
-}
+// (Logic moved to inline onclick or specific selection functions above)
 
 // Close popovers on outside click
 document.addEventListener('click', (e) => {
     if (!qualityAnchor.contains(e.target)) {
         closePopover(qualityPopover, qualityHideTimer);
+    }
+    if (!commentatorAnchor.contains(e.target)) {
+        closePopover(commentatorPopover, commentatorHideTimer);
+    }
+    if (!morePanel.contains(e.target) && !moreBtn.contains(e.target)) {
+        closeMorePanel();
     }
 });
 
@@ -316,13 +373,13 @@ let hideTimer;
 
 function showControls() {
     player.classList.remove('controls-hidden');
-    if (!qualityPopover.classList.contains('show')) {
+    if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show') && !morePanel.classList.contains('show')) {
         player.classList.remove('hide-cursor');
     }
     clearTimeout(hideTimer);
     if (!video.paused) {
         hideTimer = setTimeout(() => {
-            if (qualityPopover.classList.contains('show')) return;
+            if (qualityPopover.classList.contains('show') || commentatorPopover.classList.contains('show') || morePanel.classList.contains('show')) return;
             player.classList.add('controls-hidden', 'hide-cursor');
         }, 3000);
     }
@@ -337,7 +394,14 @@ video.addEventListener('pause', () => {
     player.classList.remove('controls-hidden', 'hide-cursor');
 });
 
-player.addEventListener('mouseleave', () => { if (isPlaying) hideTimer = setTimeout(() => { player.classList.add('controls-hidden', 'hide-cursor'); }, 1000); });
+player.addEventListener('mouseleave', () => {
+    if (isPlaying) {
+        hideTimer = setTimeout(() => {
+            if (morePanel.classList.contains('show')) return;
+            player.classList.add('controls-hidden', 'hide-cursor');
+        }, 1000);
+    }
+});
 document.getElementById('bottomControls').addEventListener('mouseenter', () => clearTimeout(hideTimer));
 document.getElementById('topBar').addEventListener('mouseenter', () => clearTimeout(hideTimer));
 
@@ -389,5 +453,6 @@ playPauseBtn.querySelector('.icon-pause').style.display = 'none';
 playPauseBtn.querySelector('.icon-play').style.display = '';
 
 document.getElementById('closeBtn').addEventListener('click', () => showHint('إغلاق'));
-document.getElementById('moreBtn').addEventListener('click', () => showHint('المزيد'));
+moreBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMorePanel(); });
+morePanel.addEventListener('click', (e) => e.stopPropagation());
 document.getElementById('titleLink').addEventListener('click', () => showHint('صفحة الفيديو'));
