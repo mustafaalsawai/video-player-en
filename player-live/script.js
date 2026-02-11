@@ -19,6 +19,8 @@ const liveBtnText = document.getElementById('liveBtnText');
 const liveBtnDot = document.getElementById('liveBtnDot');
 const moreBtn = document.getElementById('moreBtn');
 const morePanel = document.getElementById('morePanel');
+const moreBtnLive = document.getElementById('moreBtnLive');
+const moreBtnRelated = document.getElementById('moreBtnRelated');
 const fsBtn = document.getElementById('fsBtn');
 const pipBtn = document.getElementById('pipBtn');
 const centerPlay = document.getElementById('centerPlay');
@@ -135,36 +137,15 @@ liveBtn.addEventListener('click', () => {
 
 // ===== VOLUME =====
 function updateVolBg() {
-    const v = parseFloat(volSlider.value);
-    if (v <= 0) {
-        volSlider.style.background = 'rgba(255,255,255,0.2)';
-        return;
-    }
-    if (v >= 1) {
-        volSlider.style.background = '#fff';
-        return;
-    }
-    const p = v * 100;
-    volSlider.style.background = `linear-gradient(to right, #fff ${p}%, rgba(255,255,255,0.2) ${p}%)`;
+    const v = volSlider.value * 100;
+    volSlider.style.background = `linear-gradient(to right, #fff ${v}%, rgba(255,255,255,0.2) ${v}%)`;
 }
 
 function toggleMute() {
     isMuted = !isMuted;
     const on = volumeBtn.querySelector('.icon-vol-on'), off = volumeBtn.querySelector('.icon-vol-off');
-    if (isMuted) {
-        prevVol = parseFloat(volSlider.value);
-        volSlider.value = 0;
-        video.volume = 0;
-        video.muted = true;
-        on.style.display = 'none';
-        off.style.display = '';
-    } else {
-        volSlider.value = prevVol;
-        video.volume = prevVol;
-        video.muted = false;
-        on.style.display = '';
-        off.style.display = 'none';
-    }
+    if (isMuted) { prevVol = parseFloat(volSlider.value); volSlider.value = 0; video.muted = true; on.style.display = 'none'; off.style.display = ''; }
+    else { volSlider.value = prevVol; video.muted = false; on.style.display = ''; off.style.display = 'none'; }
     updateVolBg();
 }
 
@@ -346,6 +327,26 @@ function toggleMorePanel() {
     else showMorePanel();
 }
 
+function setMoreMode(mode) {
+    const isLive = mode === 'live';
+    morePanel.dataset.mode = mode;
+
+    if (moreBtnLive && moreBtnRelated) {
+        moreBtnLive.classList.toggle('more-btn-primary', isLive);
+        moreBtnLive.classList.toggle('more-btn-secondary', !isLive);
+        moreBtnRelated.classList.toggle('more-btn-primary', !isLive);
+        moreBtnRelated.classList.toggle('more-btn-secondary', isLive);
+    }
+
+    document.querySelectorAll('.more-card').forEach(card => {
+        const img = card.getAttribute(isLive ? 'data-live-img' : 'data-related-img');
+        const imgEl = card.querySelector('.more-card-image');
+        if (imgEl && img) {
+            imgEl.style.setProperty('--card-img', `url('${img}')`);
+        }
+    });
+}
+
 // Audio popover hover
 // audioAnchor.addEventListener('mouseenter', () => { clearTimeout(audioHideTimer); showPopover(audioPopover); });
 // audioAnchor.addEventListener('mouseleave', () => { audioHideTimer = setTimeout(() => closePopover(audioPopover, audioHideTimer), 200); });
@@ -456,3 +457,10 @@ document.getElementById('closeBtn').addEventListener('click', () => showHint('إ
 moreBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMorePanel(); });
 morePanel.addEventListener('click', (e) => e.stopPropagation());
 document.getElementById('titleLink').addEventListener('click', () => showHint('صفحة الفيديو'));
+
+if (moreBtnLive && moreBtnRelated) {
+    moreBtnLive.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('live'); });
+    moreBtnRelated.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('related'); });
+}
+
+setMoreMode('live');
