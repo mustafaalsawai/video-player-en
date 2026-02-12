@@ -36,6 +36,7 @@ const pipBtn = document.getElementById('pipBtn');
 const centerPlay = document.getElementById('centerPlay');
 const centerFeedback = document.getElementById('centerFeedback');
 const centerFeedbackIcon = document.getElementById('centerFeedbackIcon');
+const titleIcon = document.getElementById('titleIcon');
 const hint = document.getElementById('hint');
 
 let isPlaying = false, isMuted = false, prevVol = 0.8;
@@ -301,16 +302,34 @@ function selectQuality(el) {
     // closePopover(qualityPopover, qualityHideTimer);
 }
 // Quality popover hover
-qualityAnchor.addEventListener('mouseenter', () => { clearTimeout(qualityHideTimer); showPopover(qualityPopover); });
-qualityAnchor.addEventListener('mouseleave', () => { qualityHideTimer = setTimeout(() => closePopover(qualityPopover, qualityHideTimer), 200); });
+qualityAnchor.addEventListener('mouseenter', () => {
+    clearTimeout(qualityHideTimer);
+    clearTimeout(commentatorHideTimer);
+    closePopover(commentatorPopover, commentatorHideTimer);
+    showPopover(qualityPopover);
+});
+qualityAnchor.addEventListener('mouseleave', () => {
+    qualityHideTimer = setTimeout(() => closePopover(qualityPopover, qualityHideTimer), 200);
+});
 qualityPopover.addEventListener('mouseenter', () => { clearTimeout(qualityHideTimer); });
-qualityPopover.addEventListener('mouseleave', () => { qualityHideTimer = setTimeout(() => closePopover(qualityPopover, qualityHideTimer), 200); });
+qualityPopover.addEventListener('mouseleave', () => {
+    qualityHideTimer = setTimeout(() => closePopover(qualityPopover, qualityHideTimer), 200);
+});
 
 // Commentator popover hover
-commentatorAnchor.addEventListener('mouseenter', () => { clearTimeout(commentatorHideTimer); showPopover(commentatorPopover); });
-commentatorAnchor.addEventListener('mouseleave', () => { commentatorHideTimer = setTimeout(() => closePopover(commentatorPopover, commentatorHideTimer), 200); });
+commentatorAnchor.addEventListener('mouseenter', () => {
+    clearTimeout(commentatorHideTimer);
+    clearTimeout(qualityHideTimer);
+    closePopover(qualityPopover, qualityHideTimer);
+    showPopover(commentatorPopover);
+});
+commentatorAnchor.addEventListener('mouseleave', () => {
+    commentatorHideTimer = setTimeout(() => closePopover(commentatorPopover, commentatorHideTimer), 200);
+});
 commentatorPopover.addEventListener('mouseenter', () => { clearTimeout(commentatorHideTimer); });
-commentatorPopover.addEventListener('mouseleave', () => { commentatorHideTimer = setTimeout(() => closePopover(commentatorPopover, commentatorHideTimer), 200); });
+commentatorPopover.addEventListener('mouseleave', () => {
+    commentatorHideTimer = setTimeout(() => closePopover(commentatorPopover, commentatorHideTimer), 200);
+});
 
 function selectCommentator(el) {
     document.querySelectorAll('#commentatorPopover .popover-item').forEach(i => i.classList.remove('active'));
@@ -585,6 +604,9 @@ document.getElementById('closeBtn').addEventListener('click', () => showHint('إ
 moreBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMorePanel(); });
 morePanel.addEventListener('click', (e) => e.stopPropagation());
 document.getElementById('titleLink').addEventListener('click', () => showHint('صفحة الفيديو'));
+if (titleIcon) {
+    titleIcon.addEventListener('click', () => showHint('صفحة الفيديو'));
+}
 
 if (moreBtnLive && moreBtnRelated) {
     moreBtnLive.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('live'); });
