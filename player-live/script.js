@@ -21,6 +21,16 @@ const moreBtn = document.getElementById('moreBtn');
 const morePanel = document.getElementById('morePanel');
 const moreBtnLive = document.getElementById('moreBtnLive');
 const moreBtnRelated = document.getElementById('moreBtnRelated');
+const moreActions = document.getElementById('moreActions');
+const moreSideBySide = document.getElementById('moreSideBySide');
+const moreReplace = document.getElementById('moreReplace');
+const multiView = document.getElementById('multiView');
+const primaryView = document.getElementById('primaryView');
+const secondaryView = document.getElementById('secondaryView');
+const secondaryVideo = document.getElementById('secondaryVideo');
+const secondaryOverlay = document.getElementById('secondaryOverlay');
+const makePrimaryBtn = document.getElementById('makePrimaryBtn');
+const closeSecondaryBtn = document.getElementById('closeSecondaryBtn');
 const fsBtn = document.getElementById('fsBtn');
 const pipBtn = document.getElementById('pipBtn');
 const centerPlay = document.getElementById('centerPlay');
@@ -32,6 +42,9 @@ let isPlaying = false, isMuted = false, prevVol = 0.8;
 let dragging = false, hintTimer;
 let isLiveMode = true;
 const LIVE_THRESHOLD = 2;
+let selectedMoreCard = null;
+let selectedMoreVideo = '';
+let isMultiView = false;
 
 // ===== HELPERS =====
 function fmt(s) {
@@ -320,11 +333,48 @@ function closeMorePanel() {
     if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show')) {
         player.classList.remove('popover-open');
     }
+    clearMoreSelection();
 }
 
 function toggleMorePanel() {
     if (morePanel.classList.contains('show')) closeMorePanel();
     else showMorePanel();
+}
+
+function getCardVideo(card) {
+    return (
+        card.getAttribute('data-video') ||
+        card.getAttribute('data-live-video') ||
+        card.getAttribute('data-video-src') ||
+        card.dataset.video ||
+        video.currentSrc ||
+        video.src
+    );
+}
+
+function setMoreActionsVisible(visible) {
+    if (!moreActions) return;
+    moreActions.classList.toggle('show', visible);
+    moreActions.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    morePanel.classList.toggle('card-selected', visible);
+    morePanel.style.height = '';
+}
+
+function clearMoreSelection() {
+    if (selectedMoreCard) selectedMoreCard.classList.remove('is-selected');
+    selectedMoreCard = null;
+    selectedMoreVideo = '';
+    setMoreActionsVisible(false);
+}
+
+function selectMoreCard(card) {
+    if (selectedMoreCard && selectedMoreCard !== card) {
+        selectedMoreCard.classList.remove('is-selected');
+    }
+    selectedMoreCard = card;
+    selectedMoreVideo = getCardVideo(card);
+    card.classList.add('is-selected');
+    setMoreActionsVisible(true);
 }
 
 function setMoreMode(mode) {
@@ -345,6 +395,81 @@ function setMoreMode(mode) {
             imgEl.style.setProperty('--card-img', `url('${img}')`);
         }
     });
+
+    if (!isLive) {
+        clearMoreSelection();
+    } else if (selectedMoreCard) {
+        setMoreActionsVisible(true);
+    }
+}
+
+function enterMultiView(src) {
+    if (!secondaryView || !secondaryVideo) return;
+    const nextSrc = src || video.currentSrc || video.src;
+    if (!nextSrc) return;
+    secondaryView.setAttribute('aria-hidden', 'false');
+    secondaryVideo.src = nextSrc;
+    secondaryVideo.currentTime = 0;
+    secondaryVideo.play().catch(() => { });
+    secondaryView.classList.remove('selected');
+    player.classList.add('multi-view-active');
+    isMultiView = true;
+}
+
+function exitMultiView() {
+    if (!secondaryView || !secondaryVideo) return;
+    secondaryView.setAttribute('aria-hidden', 'true');
+    secondaryView.classList.remove('selected');
+    secondaryVideo.pause();
+    secondaryVideo.removeAttribute('src');
+    secondaryVideo.load();
+    player.classList.remove('multi-view-active');
+    isMultiView = false;
+}
+
+function swapPrimarySecondary() {
+    if (!secondaryVideo || !secondaryVideo.src) return;
+    player.classList.add('swapping');
+    const primaryState = {
+        src: video.currentSrc || video.src,
+        time: video.currentTime,
+        paused: video.paused
+    };
+    const secondaryState = {
+        src: secondaryVideo.currentSrc || secondaryVideo.src,
+        time: secondaryVideo.currentTime
+    };
+    if (!secondaryState.src) return;
+
+    video.src = secondaryState.src;
+    video.load();
+    secondaryVideo.src = primaryState.src;
+    secondaryVideo.load();
+
+    const restorePrimary = () => {
+        video.removeEventListener('loadedmetadata', restorePrimary);
+        if (!Number.isNaN(secondaryState.time)) {
+            video.currentTime = Math.min(secondaryState.time, video.duration || secondaryState.time);
+        }
+        if (!primaryState.paused) video.play().catch(() => { });
+    };
+
+    const restoreSecondary = () => {
+        secondaryVideo.removeEventListener('loadedmetadata', restoreSecondary);
+        if (!Number.isNaN(primaryState.time)) {
+            secondaryVideo.currentTime = Math.min(primaryState.time, secondaryVideo.duration || primaryState.time);
+        }
+        secondaryVideo.play().catch(() => { });
+    };
+
+    video.addEventListener('loadedmetadata', restorePrimary);
+    secondaryVideo.addEventListener('loadedmetadata', restoreSecondary);
+    if (thumbVideo) {
+        thumbVideo.src = video.src;
+    }
+
+    const clearSwap = () => player.classList.remove('swapping');
+    setTimeout(clearSwap, 350);
 }
 
 // Audio popover hover
@@ -366,6 +491,9 @@ document.addEventListener('click', (e) => {
     }
     if (!morePanel.contains(e.target) && !moreBtn.contains(e.target)) {
         closeMorePanel();
+    }
+    if (secondaryView && secondaryView.classList.contains('selected') && !secondaryView.contains(e.target)) {
+        secondaryView.classList.remove('selected');
     }
 });
 
@@ -461,6 +589,62 @@ document.getElementById('titleLink').addEventListener('click', () => showHint('Ø
 if (moreBtnLive && moreBtnRelated) {
     moreBtnLive.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('live'); });
     moreBtnRelated.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('related'); });
+}
+
+document.querySelectorAll('.more-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+        if (morePanel.dataset.mode !== 'live') return;
+        e.stopPropagation();
+        selectMoreCard(card);
+    });
+});
+
+if (moreSideBySide) {
+    moreSideBySide.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!selectedMoreVideo) return;
+        enterMultiView(selectedMoreVideo);
+        closeMorePanel();
+    });
+}
+
+if (moreReplace) {
+    moreReplace.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!selectedMoreVideo) return;
+        exitMultiView();
+        video.src = selectedMoreVideo;
+        video.load();
+        video.play().catch(() => { });
+        isLiveMode = true;
+        updateLiveBtnUI();
+        if (thumbVideo) {
+            thumbVideo.src = video.src;
+        }
+        closeMorePanel();
+    });
+}
+
+if (secondaryView) {
+    secondaryView.addEventListener('click', (e) => {
+        if (!player.classList.contains('multi-view-active')) return;
+        e.stopPropagation();
+        secondaryView.classList.toggle('selected');
+    });
+}
+
+if (makePrimaryBtn) {
+    makePrimaryBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        swapPrimarySecondary();
+    });
+}
+
+if (closeSecondaryBtn) {
+    closeSecondaryBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        exitMultiView();
+    });
 }
 
 setMoreMode('live');

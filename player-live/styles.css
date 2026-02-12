@@ -54,12 +54,183 @@ body {
   z-index: 0;
 }
 
-#video {
+#video,
+#secondaryVideo {
   width: 100%;
   height: 100%;
   object-fit: cover;
   position: relative;
   z-index: 0;
+  background: #000;
+  border-radius: inherit;
+  transition: opacity 0.25s ease;
+}
+
+.multi-view {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+}
+
+.primary-view,
+.secondary-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0;
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+}
+
+.primary-view {
+  width: 100%;
+  height: 100%;
+  flex: 1 1 auto;
+}
+
+.secondary-view {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+
+.player.multi-view-active .video-layer {
+  background: #000;
+}
+
+.player.multi-view-active .multi-view {
+  gap: 24px;
+  padding: 0 32px;
+  flex-direction: row-reverse;
+}
+
+.player.multi-view-active .primary-view {
+  height: 515.163px;
+  flex: 1 0 0;
+  aspect-ratio: 204 / 115;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #000;
+}
+
+.player.multi-view-active .secondary-view {
+  width: 431.746px;
+  height: 242.857px;
+  opacity: 1;
+  pointer-events: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #000;
+}
+
+.player.multi-view-active #video,
+.player.multi-view-active #secondaryVideo {
+  object-fit: cover;
+}
+
+.secondary-view::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid #fff;
+  border-radius: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+}
+
+.secondary-view.selected::before {
+  opacity: 1;
+}
+
+.secondary-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12px;
+  direction: rtl;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 3;
+}
+
+.secondary-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.25) 0%,
+    rgba(0, 0, 0, 0.1) 40%,
+    rgba(0, 0, 0, 0.06) 60%,
+    rgba(0, 0, 0, 0.32) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.secondary-overlay > * {
+  position: relative;
+  z-index: 1;
+}
+
+.secondary-view.selected .secondary-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.secondary-view.selected .secondary-overlay::before {
+  opacity: 1;
+}
+
+.secondary-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.secondary-close {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.secondary-close svg {
+  width: 24px;
+  height: 24px;
+}
+
+.player.multi-view-active.swapping #video,
+.player.multi-view-active.swapping #secondaryVideo {
+  opacity: 0.6;
 }
 
 .video-layer::after {
@@ -1066,8 +1237,8 @@ video[controls]::-webkit-media-controls {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 84px;
-  padding: 0 0 24px;
+  bottom: 68px;
+  padding: 0;
   z-index: 40;
   opacity: 0;
   pointer-events: none;
@@ -1086,6 +1257,8 @@ video[controls]::-webkit-media-controls {
 }
 
 .more-panel-inner {
+  display: flex;
+  flex-direction: column;
   background: none;
   border-radius: 24px;
   padding: 20px 0 16px;
@@ -1131,12 +1304,72 @@ video[controls]::-webkit-media-controls {
   color: var(--white);
 }
 
+.secondary-chip.more-btn {
+  background: var(--components-button-secondary-btn-secondary-bg, #fff);
+  color: #111;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
 .more-cards {
   display: flex;
   gap: 20px;
   overflow-x: auto;
   padding-bottom: 32px;
   padding-inline: 24px;
+}
+
+.more-actions {
+  display: flex;
+  gap: 12px;
+  padding-inline: 24px;
+  margin-top: 24px;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.more-actions.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.more-panel.card-selected .more-panel-header {
+  display: none;
+}
+
+.more-panel.card-selected .more-panel-inner {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 24px;
+  padding-inline: 24px;
+  width: 100%;
+}
+
+.more-panel.card-selected .more-cards {
+  padding-bottom: 32px;
+  padding-inline: 0;
+  overflow: visible;
+}
+
+.more-panel.card-selected .more-card:not(.is-selected) {
+  display: none;
+}
+
+.more-panel.card-selected .more-card.is-selected {
+  transform: none;
+  transition: none;
+}
+
+.more-panel.card-selected .more-actions {
+  margin-top: 0;
+  padding-inline: 0;
+  align-self: center;
 }
 
 .more-card {
@@ -1151,6 +1384,7 @@ video[controls]::-webkit-media-controls {
   color: inherit;
   text-align: right;
   cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
 .more-card:focus {
@@ -1171,6 +1405,11 @@ video[controls]::-webkit-media-controls {
   background: var(--card-img) lightgray 50% / cover no-repeat;
   background-origin: border-box;
   background-clip: border-box;
+  overflow: hidden;
+}
+
+.more-card-image::after {
+  content: none;
 }
 
 .live-badge {
@@ -1188,6 +1427,7 @@ video[controls]::-webkit-media-controls {
   position: absolute;
   top: 8px;
   right: 8px;
+  z-index: 2;
 }
 
 .more-panel[data-mode="live"] .live-badge {

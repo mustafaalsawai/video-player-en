@@ -12,8 +12,26 @@
     <div class="player" id="player">
         <!-- Video Layer -->
         <div class="video-layer">
-            <video id="video" preload="auto" autoplay muted playsinline
-                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"></video>
+            <div class="multi-view" id="multiView">
+                <div class="primary-view" id="primaryView">
+                    <video id="video" preload="auto" autoplay muted playsinline
+                        src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"></video>
+                </div>
+                <div class="secondary-view" id="secondaryView" aria-hidden="true">
+                    <video id="secondaryVideo" preload="auto" muted playsinline></video>
+                    <div class="secondary-overlay" id="secondaryOverlay">
+                        <button class="secondary-chip more-btn more-btn-secondary" id="makePrimaryBtn" type="button">اجعلها الأساسية</button>
+                        <button class="secondary-close" id="closeSecondaryBtn" type="button" aria-label="إغلاق">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none">
+                                <path
+                                    d="M17.7197 5.21979C18.0126 4.9269 18.4873 4.9269 18.7802 5.21979C19.073 5.51269 19.0731 5.98748 18.7802 6.28034L13.0605 12.0001L18.7802 17.7198C19.073 18.0127 19.0731 18.4875 18.7802 18.7803C18.4874 19.0732 18.0126 19.0731 17.7197 18.7803L11.9999 13.0606L6.28022 18.7803C5.98736 19.0732 5.51257 19.0731 5.21967 18.7803C4.92678 18.4874 4.92678 18.0127 5.21967 17.7198L10.9394 12.0001L5.21967 6.28034C4.92678 5.98745 4.92678 5.51269 5.21967 5.21979C5.51256 4.9269 5.98732 4.9269 6.28022 5.21979L11.9999 10.9395L17.7197 5.21979Z"
+                                    fill="currentColor" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Gradients -->
@@ -388,7 +406,8 @@
                 <div class="more-cards">
                     <button class="more-card" type="button"
                         data-live-img="../images/sport/Thmanyah (5).jpg"
-                        data-related-img="../images/related/Thmanyah (1).jpg">
+                        data-related-img="../images/related/Thmanyah (1).jpg"
+                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">
                         <div class="more-card-image"
                             style="--card-img: url('../images/sport/Thmanyah (5).jpg');">
                             <span class="live-badge">مباشر</span>
@@ -399,7 +418,8 @@
                     </button>
                     <button class="more-card" type="button"
                         data-live-img="../images/sport/Thmanyah (6).jpg"
-                        data-related-img="../images/related/Thmanyah (2).jpg">
+                        data-related-img="../images/related/Thmanyah (2).jpg"
+                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4">
                         <div class="more-card-image"
                             style="--card-img: url('../images/sport/Thmanyah (6).jpg');">
                             <span class="live-badge">مباشر</span>
@@ -410,7 +430,8 @@
                     </button>
                     <button class="more-card" type="button"
                         data-live-img="../images/sport/Thmanyah (7).jpg"
-                        data-related-img="../images/related/Thmanyah (3).jpg">
+                        data-related-img="../images/related/Thmanyah (3).jpg"
+                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4">
                         <div class="more-card-image"
                             style="--card-img: url('../images/sport/Thmanyah (7).jpg');">
                             <span class="live-badge">مباشر</span>
@@ -421,7 +442,8 @@
                     </button>
                     <button class="more-card" type="button"
                         data-live-img="../images/sport/Thmanyah Image (1).jpg"
-                        data-related-img="../images/related/Thmanyah (4).jpg">
+                        data-related-img="../images/related/Thmanyah (4).jpg"
+                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4">
                         <div class="more-card-image"
                             style="--card-img: url('../images/sport/Thmanyah Image (1).jpg');">
                             <span class="live-badge">مباشر</span>
@@ -432,7 +454,8 @@
                     </button>
                     <button class="more-card" type="button"
                         data-live-img="../images/sport/Thmanyah Image (2).jpg"
-                        data-related-img="../images/related/Thmanyah (8).jpg">
+                        data-related-img="../images/related/Thmanyah (8).jpg"
+                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4">
                         <div class="more-card-image"
                             style="--card-img: url('../images/sport/Thmanyah Image (2).jpg');">
                             <span class="live-badge">مباشر</span>
@@ -443,7 +466,8 @@
                     </button>
                     <button class="more-card" type="button"
                         data-live-img="../images/sport/Thmanyah Image (3).jpg"
-                        data-related-img="../images/related/Thmanyah Image.jpg">
+                        data-related-img="../images/related/Thmanyah Image.jpg"
+                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4">
                         <div class="more-card-image"
                             style="--card-img: url('../images/sport/Thmanyah Image (3).jpg');">
                             <span class="live-badge">مباشر</span>
@@ -454,7 +478,8 @@
                     </button>
                     <button class="more-card" type="button"
                         data-live-img="../images/sport/Thumbnail (1).jpg"
-                        data-related-img="../images/related/Thmanyah.jpg">
+                        data-related-img="../images/related/Thmanyah.jpg"
+                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4">
                         <div class="more-card-image"
                             style="--card-img: url('../images/sport/Thumbnail (1).jpg');">
                             <span class="live-badge">مباشر</span>
@@ -465,7 +490,8 @@
                     </button>
                     <button class="more-card" type="button"
                         data-live-img="../images/sport/Thumbnail (2).jpg"
-                        data-related-img="../images/related/https___img.thmanyahplatform.com_original_3b9aca00la1i9asi27ic9j21hd0u1kcv.jpg">
+                        data-related-img="../images/related/https___img.thmanyahplatform.com_original_3b9aca00la1i9asi27ic9j21hd0u1kcv.jpg"
+                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4">
                         <div class="more-card-image"
                             style="--card-img: url('../images/sport/Thumbnail (2).jpg');">
                             <span class="live-badge">مباشر</span>
@@ -474,6 +500,10 @@
                         <div class="more-card-title">عنوان جذاب وهادئ للمحتوى لا يتجاوز السطرين على الأكثر</div>
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
+                </div>
+                <div class="more-actions" id="moreActions" aria-hidden="true">
+                    <button class="more-btn more-btn-primary" id="moreSideBySide" type="button">مشاهدة جنبًا إلى جنب</button>
+                    <button class="more-btn more-btn-secondary" id="moreReplace" type="button">استبدال المباراة الحالية</button>
                 </div>
             </div>
         </div>
