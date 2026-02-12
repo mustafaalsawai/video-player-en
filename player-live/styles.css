@@ -904,7 +904,7 @@ video[controls]::-webkit-media-controls {
   font-weight: 500;
   line-height: 24px;
   white-space: nowrap;
-  order: 2;
+  order: 1;
 }
 
 .live-btn-text-frame {
@@ -912,7 +912,7 @@ video[controls]::-webkit-media-controls {
   height: 16px;
   justify-content: center;
   align-items: center;
-  order: 2;
+  order: 1;
 }
 
 .live-btn-dot {
@@ -922,7 +922,7 @@ video[controls]::-webkit-media-controls {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  order: 1;
+  order: 2;
 }
 
 .live-dot {
@@ -1109,9 +1109,9 @@ video[controls]::-webkit-media-controls {
     linear-gradient(90deg, rgba(2, 2, 2, 0.8) 0%, rgba(2, 2, 2, 0.8) 100%);
   backdrop-filter: blur(13.5px);
   -webkit-backdrop-filter: blur(13.5px);
-  border-radius: 18px;
+  border-radius: 32px;
   border: none;
-  min-width: 180px;
+  min-width: 215px;
   max-width: 280px;
   opacity: 0;
   visibility: hidden;
@@ -1126,7 +1126,7 @@ video[controls]::-webkit-media-controls {
   font-family: var(--font);
   overflow: hidden;
   pointer-events: none;
-  padding: 8px;
+  padding: 8px 8px 10px;
   /* Figma box shadow */
   box-shadow:
     0px 0px 1px 0px rgba(0, 0, 0, 0.4),
@@ -1142,8 +1142,26 @@ video[controls]::-webkit-media-controls {
 }
 
 .popover-header {
-  display: none;
-  /* Hide header for cleaner Figma look */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  font-family: var(--font-family-sans, "Thmanyah sans 1.2");
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--white-80);
+  position: relative;
+  margin-bottom: 9px;
+}
+
+.popover-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--border-border-tertiary, rgba(255, 255, 255, 0.12));
 }
 
 .popover-body {
@@ -1167,10 +1185,12 @@ video[controls]::-webkit-media-controls {
 
 .popover-item:hover {
   background: rgba(255, 255, 255, 0.06);
+  border-radius: 500px;
 }
 
 .popover-item:focus {
   background: rgba(255, 255, 255, 0.06);
+  border-radius: 500px;
   outline: none;
 }
 
@@ -1197,8 +1217,8 @@ video[controls]::-webkit-media-controls {
 
 /* Checkmark - pushed to far left with margin */
 .popover-item-check {
-  width: 14px;
-  height: 11px;
+  width: 28px;
+  height: 22px;
   color: var(--white);
   opacity: 0;
   flex-shrink: 0;
@@ -1287,7 +1307,7 @@ video[controls]::-webkit-media-controls {
 .more-btn {
   display: flex;
   min-width: 160px;
-  padding: var(--spacing-md, 12px) var(--spacing-5xl, 36px);
+  padding: var(--spacing-md, 12px) 24px;
   justify-content: center;
   align-items: center;
   gap: var(--spacing-sm, 8px);
@@ -1298,6 +1318,11 @@ video[controls]::-webkit-media-controls {
   font-weight: 500;
   line-height: 20px;
   cursor: pointer;
+}
+
+.more-panel-header .more-btn {
+  min-width: auto;
+  padding-inline: 16px;
 }
 
 .more-btn-primary {

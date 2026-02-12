@@ -15,10 +15,10 @@
             <div class="multi-view" id="multiView">
                 <div class="primary-view" id="primaryView">
                     <video id="video" preload="auto" autoplay muted playsinline
-                        src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"></video>
+                        src="../video/vid.mp4" data-default-src="../video/vid.mp4"></video>
                 </div>
                 <div class="secondary-view" id="secondaryView" aria-hidden="true">
-                    <video id="secondaryVideo" preload="auto" muted playsinline></video>
+                    <video id="secondaryVideo" preload="auto" muted playsinline data-default-src="../video/vid1.mp4"></video>
                     <div class="secondary-overlay" id="secondaryOverlay">
                         <button class="secondary-chip more-btn more-btn-secondary" id="makePrimaryBtn" type="button">اجعلها الأساسية</button>
                         <button class="secondary-close" id="closeSecondaryBtn" type="button" aria-label="إغلاق">
@@ -110,11 +110,11 @@
                 </button>
             </div>
             <div class="title-area">
-                <span class="title-icon">
+                <button class="title-icon" id="titleIcon" type="button" aria-label="فتح صفحة الفيديو">
                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="18" viewBox="0 0 10 18" fill="none">
                         <path d="M8.73438 0.203775C9.03601 -0.0800534 9.51008 -0.0656087 9.79395 0.236001C10.0775 0.537647 10.0632 1.01178 9.76172 1.29557L1.84082 8.74967L9.76172 16.2038C10.0631 16.4877 10.0777 16.9618 9.79395 17.2633C9.51012 17.5646 9.03593 17.5791 8.73438 17.2956L0.234375 9.29557L0.202148 9.26334C0.196839 9.2577 0.191624 9.25153 0.186523 9.24577C0.182087 9.24076 0.178103 9.23524 0.173828 9.23014C0.162295 9.2164 0.151013 9.20248 0.140625 9.18815C0.1372 9.18342 0.134156 9.1783 0.130859 9.1735C0.112617 9.14704 0.098421 9.11855 0.0839844 9.09049C0.0741506 9.07136 0.0637556 9.05263 0.0556641 9.03288C0.0457336 9.00863 0.0385178 8.9836 0.03125 8.95866C0.0248278 8.93661 0.0180382 8.91471 0.0136719 8.89225C0.00884919 8.86736 0.00618196 8.84222 0.00390627 8.81706C0.00184223 8.7943 -6.87606e-06 8.77154 1.92232e-08 8.7487C2.42402e-05 8.72586 0.0018046 8.70308 0.00390627 8.68034C0.00622326 8.65518 0.00881692 8.63002 0.0136719 8.60514C0.0181842 8.58208 0.0245605 8.5594 0.03125 8.53678C0.0381525 8.51346 0.0454603 8.49016 0.0546875 8.46745C0.0634795 8.4458 0.0740705 8.42487 0.084961 8.40397C0.0931897 8.3882 0.0999514 8.37141 0.109375 8.35612L0.134766 8.31803C0.138075 8.31334 0.142071 8.30899 0.145508 8.30436C0.151428 8.29637 0.156811 8.28776 0.163086 8.27995C0.172552 8.26818 0.183081 8.25706 0.193359 8.24577C0.196274 8.24256 0.19917 8.23917 0.202148 8.236C0.207295 8.23053 0.212505 8.22468 0.217773 8.2194L8.73438 0.203775Z" fill="white"/>
                       </svg>
-                </span>
+                </button>
                 <a class="title-link" id="titleLink" href="#" onclick="return false;">إعادة إكتشاف الصلاة | بودكاست فنجان</a>
             </div>
         </div>
@@ -236,6 +236,22 @@
                 </div>
 
                 <div class="controls-right">
+                    <!-- More -->
+                    <button class="btn" id="moreBtn">
+                        <svg width="35" height="35" viewBox="0 0 27 27" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M22.436 9.558C23.269 9.558 24.166 10.163 24.167 11.163V22.562C24.166 23.562 23.269 24.167 22.436 24.167H4.231C3.397 24.167 2.5 23.562 2.5 22.562V11.163C2.5 10.163 3.397 9.558 4.231 9.558H22.436ZM4.231 11.225C4.192 11.225 4.167 11.261 4.167 11.3V22.424C4.167 22.463 4.192 22.5 4.231 22.5H22.436C22.475 22.5 22.5 22.463 22.5 22.424V11.3C22.5 11.261 22.475 11.225 22.436 11.225H4.231Z"
+                                fill="white" />
+                            <path
+                                d="M20.1 6.03C20.56 6.03 20.933 6.403 20.933 6.863C20.933 7.323 20.56 7.696 20.1 7.696H5.687C5.227 7.696 4.854 7.323 4.854 6.863C4.854 6.403 5.227 6.03 5.687 6.03H20.1Z"
+                                fill="white" />
+                            <path
+                                d="M17.451 2.5C17.911 2.5 18.285 2.873 18.285 3.333C18.285 3.794 17.911 4.167 17.451 4.167H8.039C7.579 4.167 7.206 3.794 7.206 3.333C7.206 2.873 7.579 2.5 8.039 2.5H17.451Z"
+                                fill="white" />
+                        </svg>
+                        <span class="tip">المزيد</span>
+                    </button>
+
                     <!-- Audio Commentary with Popover -->
                     <div class="popover-anchor" id="commentatorAnchor">
                         <button class="btn" id="commentatorBtn">
@@ -252,7 +268,7 @@
                         </button>
                         <!-- Commentator Popover -->
                         <div class="popover-panel" id="commentatorPopover">
-                            <div class="popover-header">المعلق</div>
+                            <div class="popover-header">المعلق الصوتي</div>
                             <div class="popover-body">
                                 <div class="popover-item active" data-commentator="fares"
                                     onclick="selectCommentator(this)">
@@ -301,7 +317,7 @@
                         </button>
                         <!-- Quality Popover -->
                         <div class="popover-panel" id="qualityPopover">
-                            <div class="popover-header">جودة</div>
+                            <div class="popover-header">الجودة</div>
                             <div class="popover-body">
                                 <div class="popover-item active" data-quality="auto" onclick="selectQuality(this)">
                                     <svg class="popover-item-check" viewBox="0 0 24 24" fill="none"
@@ -317,7 +333,7 @@
                                         stroke-linejoin="round">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
-                                    <span class="popover-item-name">منخفض</span>
+                                    <span class="popover-item-name">منخفضة</span>
                                 </div>
                                 <div class="popover-item" data-quality="medium" onclick="selectQuality(this)">
                                     <svg class="popover-item-check" viewBox="0 0 24 24" fill="none"
@@ -325,7 +341,7 @@
                                         stroke-linejoin="round">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
-                                    <span class="popover-item-name">متوسط</span>
+                                    <span class="popover-item-name">متوسطة</span>
                                 </div>
                                 <div class="popover-item" data-quality="high" onclick="selectQuality(this)">
                                     <svg class="popover-item-check" viewBox="0 0 24 24" fill="none"
@@ -333,8 +349,16 @@
                                         stroke-linejoin="round">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
+                                    <span class="popover-item-name">عالية</span>
+                                </div>
+                                <div class="popover-item" data-quality="ultra" onclick="selectQuality(this)">
+                                    <svg class="popover-item-check" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
                                     <div class="popover-item-name-group">
-                                        <span class="popover-item-name">مرتفع</span>
+                                        <span class="popover-item-name">قصوى</span>
                                         <span class="popover-item-premium"><svg xmlns="http://www.w3.org/2000/svg"
                                                 width="14" height="14" viewBox="0 0 14 14" fill="none">
                                                 <path
@@ -350,20 +374,24 @@
                         </div>
                     </div>
 
-                    <!-- More -->
-                    <button class="btn" id="moreBtn">
-                        <svg width="35" height="35" viewBox="0 0 27 27" fill="none">
+                    <!-- Comment Icon -->
+                    <button class="btn" id="commentBtn" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"
+                            fill="none">
+                            <path
+                                d="M11.0522 13.9644C12.1125 13.9645 12.9724 14.8231 12.9727 15.8833C12.9727 16.9437 12.1126 17.8036 11.0522 17.8037C9.99175 17.8037 9.13037 16.9438 9.13037 15.8833C9.13059 14.823 9.99188 13.9644 11.0522 13.9644Z"
+                                fill="white" />
+                            <path
+                                d="M18 13.9644C19.0604 13.9644 19.9202 14.823 19.9204 15.8833C19.9204 16.9438 19.0605 17.8037 18 17.8037C16.9397 17.8035 16.0796 16.9437 16.0796 15.8833C16.0798 14.8231 16.9398 13.9646 18 13.9644Z"
+                                fill="white" />
+                            <path
+                                d="M24.9492 13.9644C26.0095 13.9645 26.8694 14.8231 26.8696 15.8833C26.8696 16.9437 26.0096 17.8036 24.9492 17.8037C23.8887 17.8037 23.0273 16.9438 23.0273 15.8833C23.0276 14.823 23.8889 13.9644 24.9492 13.9644Z"
+                                fill="white" />
                             <path fill-rule="evenodd" clip-rule="evenodd"
-                                d="M22.436 9.558C23.269 9.558 24.166 10.163 24.167 11.163V22.562C24.166 23.562 23.269 24.167 22.436 24.167H4.231C3.397 24.167 2.5 23.562 2.5 22.562V11.163C2.5 10.163 3.397 9.558 4.231 9.558H22.436ZM4.231 11.225C4.192 11.225 4.167 11.261 4.167 11.3V22.424C4.167 22.463 4.192 22.5 4.231 22.5H22.436C22.475 22.5 22.5 22.463 22.5 22.424V11.3C22.5 11.261 22.475 11.225 22.436 11.225H4.231Z"
-                                fill="white" />
-                            <path
-                                d="M20.1 6.03C20.56 6.03 20.933 6.403 20.933 6.863C20.933 7.323 20.56 7.696 20.1 7.696H5.687C5.227 7.696 4.854 7.323 4.854 6.863C4.854 6.403 5.227 6.03 5.687 6.03H20.1Z"
-                                fill="white" />
-                            <path
-                                d="M17.451 2.5C17.911 2.5 18.285 2.873 18.285 3.333C18.285 3.794 17.911 4.167 17.451 4.167H8.039C7.579 4.167 7.206 3.794 7.206 3.333C7.206 2.873 7.579 2.5 8.039 2.5H17.451Z"
+                                d="M28.0957 5.25C30.7957 5.25038 32.9998 7.43405 33 10.1338V21.8115C32.9998 24.5233 30.7986 26.7096 28.0957 26.71H25.125V28.8955C25.125 30.2863 23.6801 31.1359 22.4927 30.5786L22.2598 30.4482L16.5396 26.71H7.9043C5.20135 26.7096 3.00023 24.5233 3 21.8115V10.1338C3.0002 7.43405 5.20426 5.25038 7.9043 5.25H28.0957ZM7.9043 7.5C6.43523 7.50038 5.2502 8.68833 5.25 10.1338V21.8115C5.25023 23.2749 6.43817 24.4596 7.9043 24.46H16.875C17.0934 24.46 17.3073 24.5237 17.4902 24.6431L22.875 28.1631V25.585C22.8753 24.9639 23.3788 24.46 24 24.46H28.0957C29.5618 24.4596 30.7498 23.2749 30.75 21.8115V10.1338C30.7498 8.68833 29.5648 7.50038 28.0957 7.5H7.9043Z"
                                 fill="white" />
                         </svg>
-                        <span class="tip">المزيد</span>
+                        <span class="tip">التعليق</span>
                     </button>
 
                     <!-- Fullscreen -->
@@ -405,11 +433,11 @@
                 </div>
                 <div class="more-cards">
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah (5).jpg"
-                        data-related-img="../images/related/Thmanyah (1).jpg"
-                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah (5).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah (1).jpg"
+                        data-video="../video/vid.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah (5).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah (5).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -417,11 +445,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah (6).jpg"
-                        data-related-img="../images/related/Thmanyah (2).jpg"
-                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4">
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah (6).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah (2).jpg"
+                        data-video="../video/vid1.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah (6).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah (6).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -429,11 +457,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah (7).jpg"
-                        data-related-img="../images/related/Thmanyah (3).jpg"
-                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4">
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah (7).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah (3).jpg"
+                        data-video="../video/vid.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah (7).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah (7).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -441,11 +469,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah Image (1).jpg"
-                        data-related-img="../images/related/Thmanyah (4).jpg"
-                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4">
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah Image (1).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah (4).jpg"
+                        data-video="../video/vid1.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah Image (1).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah Image (1).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -453,11 +481,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah Image (2).jpg"
-                        data-related-img="../images/related/Thmanyah (8).jpg"
-                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4">
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah Image (2).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah (8).jpg"
+                        data-video="../video/vid.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah Image (2).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah Image (2).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -465,11 +493,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah Image (3).jpg"
-                        data-related-img="../images/related/Thmanyah Image.jpg"
-                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4">
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah Image (3).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah Image.jpg"
+                        data-video="../video/vid1.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah Image (3).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah Image (3).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -477,11 +505,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thumbnail (1).jpg"
-                        data-related-img="../images/related/Thmanyah.jpg"
-                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4">
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thumbnail (1).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah.jpg"
+                        data-video="../video/vid.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thumbnail (1).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thumbnail (1).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -489,11 +517,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thumbnail (2).jpg"
-                        data-related-img="../images/related/https___img.thmanyahplatform.com_original_3b9aca00la1i9asi27ic9j21hd0u1kcv.jpg"
-                        data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4">
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thumbnail (2).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/https___img.thmanyahplatform.com_original_3b9aca00la1i9asi27ic9j21hd0u1kcv.jpg"
+                        data-video="../video/vid1.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thumbnail (2).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thumbnail (2).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>

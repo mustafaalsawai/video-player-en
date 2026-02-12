@@ -46,6 +46,8 @@ const LIVE_THRESHOLD = 2;
 let selectedMoreCard = null;
 let selectedMoreVideo = '';
 let isMultiView = false;
+const primaryDefaultSrc = video?.dataset?.defaultSrc || '';
+const secondaryDefaultSrc = secondaryVideo?.dataset?.defaultSrc || '';
 
 // ===== HELPERS =====
 function fmt(s) {
@@ -422,6 +424,27 @@ function setMoreMode(mode) {
     }
 }
 
+function getFileName(src) {
+    if (!src) return '';
+    try {
+        return new URL(src, window.location.href).pathname.split('/').pop() || '';
+    } catch {
+        return src.split('/').pop() || '';
+    }
+}
+
+function getSideBySideSrc() {
+    const currentSrc = video.currentSrc || video.src || '';
+    const currentName = getFileName(currentSrc);
+    const secondaryName = getFileName(secondaryDefaultSrc);
+
+    if (secondaryDefaultSrc && currentName === secondaryName) {
+        return primaryDefaultSrc || selectedMoreVideo || currentSrc;
+    }
+
+    return secondaryDefaultSrc || selectedMoreVideo || currentSrc;
+}
+
 function enterMultiView(src) {
     if (!secondaryView || !secondaryVideo) return;
     const nextSrc = src || video.currentSrc || video.src;
@@ -600,6 +623,12 @@ if (video.paused) {
 playPauseBtn.querySelector('.icon-pause').style.display = 'none';
 playPauseBtn.querySelector('.icon-play').style.display = '';
 
+// Ensure playback on load (autoplay + muted)
+video.muted = true;
+video.autoplay = true;
+video.playsInline = true;
+video.play().catch(() => { });
+
 document.getElementById('closeBtn').addEventListener('click', () => showHint('إغلاق'));
 moreBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMorePanel(); });
 morePanel.addEventListener('click', (e) => e.stopPropagation());
@@ -624,8 +653,9 @@ document.querySelectorAll('.more-card').forEach(card => {
 if (moreSideBySide) {
     moreSideBySide.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (!selectedMoreVideo) return;
-        enterMultiView(selectedMoreVideo);
+        const sideSrc = getSideBySideSrc();
+        if (!sideSrc) return;
+        enterMultiView(sideSrc);
         closeMorePanel();
     });
 }
