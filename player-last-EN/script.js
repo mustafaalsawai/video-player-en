@@ -14,17 +14,40 @@ const progressThumb = document.getElementById('progressThumb');
 const progressPreview = document.getElementById('progressPreview');
 const progressPreviewCanvas = document.getElementById('progressPreviewCanvas');
 const progressPreviewTime = document.getElementById('progressPreviewTime');
-const timeCurrent = document.getElementById('timeCurrent');
-const timeTotal = document.getElementById('timeTotal');
+const liveBtn = document.getElementById('liveBtn');
+const liveBtnText = document.getElementById('liveBtnText');
+const liveBtnDot = document.getElementById('liveBtnDot');
+const moreBtn = document.getElementById('moreBtn');
+const morePanel = document.getElementById('morePanel');
+const moreBtnLive = document.getElementById('moreBtnLive');
+const moreBtnRelated = document.getElementById('moreBtnRelated');
+const moreActions = document.getElementById('moreActions');
+const moreSideBySide = document.getElementById('moreSideBySide');
+const moreReplace = document.getElementById('moreReplace');
+const multiView = document.getElementById('multiView');
+const primaryView = document.getElementById('primaryView');
+const secondaryView = document.getElementById('secondaryView');
+const secondaryVideo = document.getElementById('secondaryVideo');
+const secondaryOverlay = document.getElementById('secondaryOverlay');
+const makePrimaryBtn = document.getElementById('makePrimaryBtn');
+const closeSecondaryBtn = document.getElementById('closeSecondaryBtn');
 const fsBtn = document.getElementById('fsBtn');
 const pipBtn = document.getElementById('pipBtn');
 const centerPlay = document.getElementById('centerPlay');
 const centerFeedback = document.getElementById('centerFeedback');
 const centerFeedbackIcon = document.getElementById('centerFeedbackIcon');
+const titleIcon = document.getElementById('titleIcon');
 const hint = document.getElementById('hint');
 
 let isPlaying = false, isMuted = false, prevVol = 0.8;
 let dragging = false, hintTimer;
+let isLiveMode = true;
+const LIVE_THRESHOLD = 2;
+let selectedMoreCard = null;
+let selectedMoreVideo = '';
+let isMultiView = false;
+const primaryDefaultSrc = video?.dataset?.defaultSrc || '';
+const secondaryDefaultSrc = secondaryVideo?.dataset?.defaultSrc || '';
 
 // ===== HELPERS =====
 function fmt(s) {
@@ -36,18 +59,24 @@ function fmt(s) {
 
 function updProgress() {
     if (!video.duration) return;
-    const p = (video.currentTime / video.duration) * 100;
+    const p = isLiveMode ? 100 : (video.currentTime / video.duration) * 100;
     progressFill.style.width = p + '%';
     progressThumb.style.left = p + '%';
-    timeCurrent.textContent = fmt(video.currentTime);
+}
+function updateLiveBtnUI() {
+    if (isLiveMode) {
+        liveBtnText.textContent = 'مباشر';
+        liveBtn.classList.remove('back-to-live');
+    } else {
+        liveBtnText.textContent = 'عودة للمباشر';
+        liveBtn.classList.add('back-to-live');
+    }
 }
 
 function showHint(t) {
-    if (!hint) return;
-    hint.textContent = t;
-    hint.classList.add('show');
+    if (hint) { hint.textContent = t; hint.classList.add('show'); }
     clearTimeout(hintTimer);
-    hintTimer = setTimeout(() => hint.classList.remove('show'), 800);
+    hintTimer = setTimeout(() => { if (hint) hint.classList.remove('show'); }, 800);
 }
 
 // ===== SIDE HINTS =====
@@ -65,17 +94,24 @@ function triggerSideHint(side) {
 
 rewardBtn.addEventListener('click', () => {
     video.currentTime = Math.max(0, video.currentTime - 15);
+    isLiveMode = false;
+    updateLiveBtnUI();
     triggerSideHint('left');
 });
 
 forwardBtn.addEventListener('click', () => {
-    video.currentTime = Math.min(video.duration || 0, video.currentTime + 15);
+    const newTime = Math.min(video.duration || 0, video.currentTime + 15);
+    video.currentTime = newTime;
+    if (video.duration && video.duration - newTime <= LIVE_THRESHOLD) {
+        isLiveMode = true;
+        updateLiveBtnUI();
+    }
     triggerSideHint('right');
 });
 
 // ===== PLAY / PAUSE =====
 function showFeedback(isPause) {
-    centerFeedbackIcon.innerHTML = isPause 
+    centerFeedbackIcon.innerHTML = isPause
         ? '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M18 6.5C18.8284 6.5 19.5 7.17157 19.5 8V40C19.5 40.8284 18.8284 41.5 18 41.5C17.1716 41.5 16.5 40.8284 16.5 40V8C16.5 7.17157 17.1716 6.5 18 6.5Z" fill="white"/><path d="M30 6.5C30.8284 6.5 31.5 7.17157 31.5 8V40C31.5 40.8284 30.8284 41.5 30 41.5C29.1716 41.5 28.5 40.8284 28.5 40V8C28.5 7.17157 29.1716 6.5 30 6.5Z" fill="white"/></svg>'
         : '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M16.6276 8.73766L36.3703 21.0311C36.9154 21.3714 37.364 21.8459 37.6732 22.4091C37.9825 22.9724 38.142 23.6056 38.1365 24.2481C38.131 24.8907 37.9607 25.5211 37.6419 26.079C37.3231 26.6369 36.8665 27.1036 36.3157 27.4345L16.5757 39.2938C16.0057 39.6362 15.355 39.821 14.6902 39.8295C14.0254 39.838 13.3702 39.6698 12.7917 39.342C12.2132 39.0143 11.7321 38.5389 11.3975 37.9643C11.063 37.3897 10.8871 36.7365 10.8877 36.0716V11.9216C10.8882 11.2521 11.0678 10.5949 11.4077 10.0182C11.7476 9.44139 12.2356 8.966 12.8211 8.64124C13.4065 8.31648 14.0682 8.15417 14.7374 8.17113C15.4067 8.18808 16.0593 8.38368 16.6276 8.73766Z" fill="white"/></svg>';
     centerFeedbackIcon.classList.add('show');
@@ -86,7 +122,7 @@ function showFeedback(isPause) {
 
 function togglePlay() {
     if (video.paused) {
-        video.play().catch(() => {});
+        video.play().catch(() => { });
         showFeedback(true);
     } else {
         video.pause();
@@ -105,9 +141,15 @@ document.querySelector('.video-layer').addEventListener('click', () => {
     }
 });
 
-// ===== SEEK =====
-rewardBtn.addEventListener('click', () => { video.currentTime = Math.max(0, video.currentTime - 15); showHint('Rewind 15 seconds'); });
-forwardBtn.addEventListener('click', () => { video.currentTime = Math.min(video.duration || 0, video.currentTime + 15); showHint('Forward 15 seconds'); });
+// ===== LIVE BUTTON =====
+liveBtn.addEventListener('click', () => {
+    if (!isLiveMode && video.duration) {
+        video.currentTime = video.duration;
+        isLiveMode = true;
+        updateLiveBtnUI();
+        updProgress();
+    }
+});
 
 // ===== VOLUME =====
 function updateVolBg() {
@@ -197,14 +239,18 @@ document.addEventListener('mouseup', () => { if (dragging) { dragging = false; p
 function seekTo(e) {
     const r = progressTrack.getBoundingClientRect();
     const p = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
-    video.currentTime = p * (video.duration || 0);
+    const seekTime = p * (video.duration || 0);
+    video.currentTime = seekTime;
+    if (video.duration && seekTime < video.duration - LIVE_THRESHOLD) {
+        isLiveMode = false;
+        updateLiveBtnUI();
+    }
     updProgress();
 }
-
 // ===== FULLSCREEN =====
 function toggleFS() {
-    if (!document.fullscreenElement) player.requestFullscreen().catch(() => {});
-    else document.exitFullscreen().catch(() => {});
+    if (!document.fullscreenElement) player.requestFullscreen().catch(() => { });
+    else document.exitFullscreen().catch(() => { });
 }
 fsBtn.addEventListener('click', toggleFS);
 document.addEventListener('fullscreenchange', () => {
@@ -218,22 +264,24 @@ pipBtn.addEventListener('click', async () => {
     try {
         if (document.pictureInPictureElement) await document.exitPictureInPicture();
         else await video.requestPictureInPicture();
-    } catch { showHint('Not supported'); }
+    } catch { showHint('غير مدعوم'); }
 });
 
 // ===== POPOVER LOGIC =====
 const qualityPopover = document.getElementById('qualityPopover');
-//const audioPopover = document.getElementById('audioPopover');
+const commentatorPopover = document.getElementById('commentatorPopover');
 const qualityAnchor = document.getElementById('qualityAnchor');
-//const audioAnchor = document.getElementById('audioAnchor');
+const commentatorAnchor = document.getElementById('commentatorAnchor');
 let qualityHideTimer = null;
-let audioHideTimer = null;
+let commentatorHideTimer = null;
 
 // تحديث وظائف القوائم للتحكم في ظهور شريط التقدم
 function showPopover(popover) {
-   
+    if (morePanel.classList.contains('show')) {
+        closeMorePanel();
+    }
     popover.classList.add('show');
-    
+
     // إضافة الكلاس الذي يخفي شريط التقدم
     player.classList.add('popover-open');
 }
@@ -241,9 +289,9 @@ function showPopover(popover) {
 function closePopover(popover, timer) {
     clearTimeout(timer);
     popover.classList.remove('show');
-    
+
     // إذا أغلقت كل القوائم، نعيد شريط التقدم
-    if (!qualityPopover.classList.contains('show')) {
+    if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show') && !morePanel.classList.contains('show')) {
         player.classList.remove('popover-open');
     }
 }
@@ -256,10 +304,215 @@ function selectQuality(el) {
     // closePopover(qualityPopover, qualityHideTimer);
 }
 // Quality popover hover
-qualityAnchor.addEventListener('mouseenter', () => { clearTimeout(qualityHideTimer); showPopover(qualityPopover); });
-qualityAnchor.addEventListener('mouseleave', () => { qualityHideTimer = setTimeout(() => closePopover(qualityPopover, qualityHideTimer), 200); });
+qualityAnchor.addEventListener('mouseenter', () => {
+    clearTimeout(qualityHideTimer);
+    clearTimeout(commentatorHideTimer);
+    closePopover(commentatorPopover, commentatorHideTimer);
+    showPopover(qualityPopover);
+});
+qualityAnchor.addEventListener('mouseleave', () => {
+    qualityHideTimer = setTimeout(() => closePopover(qualityPopover, qualityHideTimer), 200);
+});
 qualityPopover.addEventListener('mouseenter', () => { clearTimeout(qualityHideTimer); });
-qualityPopover.addEventListener('mouseleave', () => { qualityHideTimer = setTimeout(() => closePopover(qualityPopover, qualityHideTimer), 200); });
+qualityPopover.addEventListener('mouseleave', () => {
+    qualityHideTimer = setTimeout(() => closePopover(qualityPopover, qualityHideTimer), 200);
+});
+
+// Commentator popover hover
+commentatorAnchor.addEventListener('mouseenter', () => {
+    clearTimeout(commentatorHideTimer);
+    clearTimeout(qualityHideTimer);
+    closePopover(qualityPopover, qualityHideTimer);
+    showPopover(commentatorPopover);
+});
+commentatorAnchor.addEventListener('mouseleave', () => {
+    commentatorHideTimer = setTimeout(() => closePopover(commentatorPopover, commentatorHideTimer), 200);
+});
+commentatorPopover.addEventListener('mouseenter', () => { clearTimeout(commentatorHideTimer); });
+commentatorPopover.addEventListener('mouseleave', () => {
+    commentatorHideTimer = setTimeout(() => closePopover(commentatorPopover, commentatorHideTimer), 200);
+});
+
+function selectCommentator(el) {
+    document.querySelectorAll('#commentatorPopover .popover-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+}
+
+// ===== MORE PANEL =====
+function showMorePanel() {
+    morePanel.classList.add('show');
+    morePanel.setAttribute('aria-hidden', 'false');
+    player.classList.add('popover-open', 'more-open');
+    player.classList.remove('controls-hidden', 'hide-cursor');
+    clearTimeout(hideTimer);
+}
+
+function closeMorePanel() {
+    morePanel.classList.remove('show');
+    morePanel.setAttribute('aria-hidden', 'true');
+    player.classList.remove('more-open');
+    if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show')) {
+        player.classList.remove('popover-open');
+    }
+    clearMoreSelection();
+}
+
+function toggleMorePanel() {
+    if (morePanel.classList.contains('show')) closeMorePanel();
+    else showMorePanel();
+}
+
+function getCardVideo(card) {
+    return (
+        card.getAttribute('data-video') ||
+        card.getAttribute('data-live-video') ||
+        card.getAttribute('data-video-src') ||
+        card.dataset.video ||
+        video.currentSrc ||
+        video.src
+    );
+}
+
+function setMoreActionsVisible(visible) {
+    if (!moreActions) return;
+    moreActions.classList.toggle('show', visible);
+    moreActions.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    morePanel.classList.toggle('card-selected', visible);
+    morePanel.style.height = '';
+}
+
+function clearMoreSelection() {
+    if (selectedMoreCard) selectedMoreCard.classList.remove('is-selected');
+    selectedMoreCard = null;
+    selectedMoreVideo = '';
+    setMoreActionsVisible(false);
+}
+
+function selectMoreCard(card) {
+    if (selectedMoreCard && selectedMoreCard !== card) {
+        selectedMoreCard.classList.remove('is-selected');
+    }
+    selectedMoreCard = card;
+    selectedMoreVideo = getCardVideo(card);
+    card.classList.add('is-selected');
+    setMoreActionsVisible(true);
+}
+
+function setMoreMode(mode) {
+    const isLive = mode === 'live';
+    morePanel.dataset.mode = mode;
+
+    if (moreBtnLive && moreBtnRelated) {
+        moreBtnLive.classList.toggle('more-btn-primary', isLive);
+        moreBtnLive.classList.toggle('more-btn-secondary', !isLive);
+        moreBtnRelated.classList.toggle('more-btn-primary', !isLive);
+        moreBtnRelated.classList.toggle('more-btn-secondary', isLive);
+    }
+
+    document.querySelectorAll('.more-card').forEach(card => {
+        const img = card.getAttribute(isLive ? 'data-live-img' : 'data-related-img');
+        const imgEl = card.querySelector('.more-card-image');
+        if (imgEl && img) {
+            imgEl.style.setProperty('--card-img', `url('${img}')`);
+        }
+    });
+
+    if (!isLive) {
+        clearMoreSelection();
+    } else if (selectedMoreCard) {
+        setMoreActionsVisible(true);
+    }
+}
+
+function getFileName(src) {
+    if (!src) return '';
+    try {
+        return new URL(src, window.location.href).pathname.split('/').pop() || '';
+    } catch {
+        return src.split('/').pop() || '';
+    }
+}
+
+function getSideBySideSrc() {
+    const currentSrc = video.currentSrc || video.src || '';
+    const currentName = getFileName(currentSrc);
+    const secondaryName = getFileName(secondaryDefaultSrc);
+
+    if (secondaryDefaultSrc && currentName === secondaryName) {
+        return primaryDefaultSrc || selectedMoreVideo || currentSrc;
+    }
+
+    return secondaryDefaultSrc || selectedMoreVideo || currentSrc;
+}
+
+function enterMultiView(src) {
+    if (!secondaryView || !secondaryVideo) return;
+    const nextSrc = src || video.currentSrc || video.src;
+    if (!nextSrc) return;
+    secondaryView.setAttribute('aria-hidden', 'false');
+    secondaryVideo.src = nextSrc;
+    secondaryVideo.currentTime = 0;
+    secondaryVideo.play().catch(() => { });
+    secondaryView.classList.remove('selected');
+    player.classList.add('multi-view-active');
+    isMultiView = true;
+}
+
+function exitMultiView() {
+    if (!secondaryView || !secondaryVideo) return;
+    secondaryView.setAttribute('aria-hidden', 'true');
+    secondaryView.classList.remove('selected');
+    secondaryVideo.pause();
+    secondaryVideo.removeAttribute('src');
+    secondaryVideo.load();
+    player.classList.remove('multi-view-active');
+    isMultiView = false;
+}
+
+function swapPrimarySecondary() {
+    if (!secondaryVideo || !secondaryVideo.src) return;
+    player.classList.add('swapping');
+    const primaryState = {
+        src: video.currentSrc || video.src,
+        time: video.currentTime,
+        paused: video.paused
+    };
+    const secondaryState = {
+        src: secondaryVideo.currentSrc || secondaryVideo.src,
+        time: secondaryVideo.currentTime
+    };
+    if (!secondaryState.src) return;
+
+    video.src = secondaryState.src;
+    video.load();
+    secondaryVideo.src = primaryState.src;
+    secondaryVideo.load();
+
+    const restorePrimary = () => {
+        video.removeEventListener('loadedmetadata', restorePrimary);
+        if (!Number.isNaN(secondaryState.time)) {
+            video.currentTime = Math.min(secondaryState.time, video.duration || secondaryState.time);
+        }
+        if (!primaryState.paused) video.play().catch(() => { });
+    };
+
+    const restoreSecondary = () => {
+        secondaryVideo.removeEventListener('loadedmetadata', restoreSecondary);
+        if (!Number.isNaN(primaryState.time)) {
+            secondaryVideo.currentTime = Math.min(primaryState.time, secondaryVideo.duration || primaryState.time);
+        }
+        secondaryVideo.play().catch(() => { });
+    };
+
+    video.addEventListener('loadedmetadata', restorePrimary);
+    secondaryVideo.addEventListener('loadedmetadata', restoreSecondary);
+    if (thumbVideo) {
+        thumbVideo.src = video.src;
+    }
+
+    const clearSwap = () => player.classList.remove('swapping');
+    setTimeout(clearSwap, 350);
+}
 
 // Audio popover hover
 // audioAnchor.addEventListener('mouseenter', () => { clearTimeout(audioHideTimer); showPopover(audioPopover); });
@@ -268,20 +521,25 @@ qualityPopover.addEventListener('mouseleave', () => { qualityHideTimer = setTime
 // audioPopover.addEventListener('mouseleave', () => { audioHideTimer = setTimeout(() => closePopover(audioPopover, audioHideTimer), 200); });
 
 // Selection functions
-function selectQuality(el) {
-    document.querySelectorAll('#qualityPopover .popover-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
-}
-
-function selectAudio(el) {
-    document.querySelectorAll('#audioPopover .popover-body .popover-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
-}
+// (Logic moved to inline onclick or specific selection functions above)
 
 // Close popovers on outside click
 document.addEventListener('click', (e) => {
     if (!qualityAnchor.contains(e.target)) {
         closePopover(qualityPopover, qualityHideTimer);
+    }
+    if (!commentatorAnchor.contains(e.target)) {
+        closePopover(commentatorPopover, commentatorHideTimer);
+    }
+    if (!morePanel.contains(e.target) && !moreBtn.contains(e.target)) {
+        closeMorePanel();
+    } else if (morePanel.classList.contains('show') && morePanel.contains(e.target)) {
+        if (!e.target.closest('.more-btn, .more-card, a')) {
+            closeMorePanel();
+        }
+    }
+    if (secondaryView && secondaryView.classList.contains('selected') && !secondaryView.contains(e.target)) {
+        secondaryView.classList.remove('selected');
     }
 });
 
@@ -290,13 +548,13 @@ let hideTimer;
 
 function showControls() {
     player.classList.remove('controls-hidden');
-    if (!qualityPopover.classList.contains('show')) {
+    if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show') && !morePanel.classList.contains('show')) {
         player.classList.remove('hide-cursor');
     }
     clearTimeout(hideTimer);
     if (!video.paused) {
         hideTimer = setTimeout(() => {
-            if (qualityPopover.classList.contains('show')) return;
+            if (qualityPopover.classList.contains('show') || commentatorPopover.classList.contains('show') || morePanel.classList.contains('show')) return;
             player.classList.add('controls-hidden', 'hide-cursor');
         }, 3000);
     }
@@ -311,7 +569,14 @@ video.addEventListener('pause', () => {
     player.classList.remove('controls-hidden', 'hide-cursor');
 });
 
-player.addEventListener('mouseleave', () => { if (isPlaying) hideTimer = setTimeout(() => { player.classList.add('controls-hidden', 'hide-cursor'); }, 1000); });
+player.addEventListener('mouseleave', () => {
+    if (isPlaying) {
+        hideTimer = setTimeout(() => {
+            if (morePanel.classList.contains('show')) return;
+            player.classList.add('controls-hidden', 'hide-cursor');
+        }, 1000);
+    }
+});
 document.getElementById('bottomControls').addEventListener('mouseenter', () => clearTimeout(hideTimer));
 document.getElementById('topBar').addEventListener('mouseenter', () => clearTimeout(hideTimer));
 
@@ -321,16 +586,16 @@ document.addEventListener('keydown', e => {
         case ' ': case 'k': e.preventDefault(); togglePlay(); showControls(); break;
         case 'arrowright': e.preventDefault(); forwardBtn.click(); showControls(); break;
         case 'arrowleft': e.preventDefault(); rewardBtn.click(); showControls(); break;
-        case 'arrowup': e.preventDefault(); volSlider.value = Math.min(1, parseFloat(volSlider.value) + 0.05); volSlider.dispatchEvent(new Event('input')); showControls(); showHint(`Volume ${Math.round(volSlider.value * 100)}%`); break;
-        case 'arrowdown': e.preventDefault(); volSlider.value = Math.max(0, parseFloat(volSlider.value) - 0.05); volSlider.dispatchEvent(new Event('input')); showControls(); showHint(`Volume ${Math.round(volSlider.value * 100)}%`); break;
+        case 'arrowup': e.preventDefault(); volSlider.value = Math.min(1, parseFloat(volSlider.value) + 0.05); volSlider.dispatchEvent(new Event('input')); showControls(); showHint(`الصوت ${Math.round(volSlider.value * 100)}%`); break;
+        case 'arrowdown': e.preventDefault(); volSlider.value = Math.max(0, parseFloat(volSlider.value) - 0.05); volSlider.dispatchEvent(new Event('input')); showControls(); showHint(`الصوت ${Math.round(volSlider.value * 100)}%`); break;
         case 'f': e.preventDefault(); toggleFS(); break;
-        case 'm': e.preventDefault(); toggleMute(); showControls(); showHint(isMuted ? 'Muted' : 'Unmuted'); break;
+        case 'm': e.preventDefault(); toggleMute(); showControls(); showHint(isMuted ? 'كتم الصوت' : 'تشغيل الصوت'); break;
         case 'p': e.preventDefault(); pipBtn.click(); break;
     }
 });
 
 // ===== VIDEO EVENTS =====
-video.addEventListener('loadedmetadata', () => { timeTotal.textContent = fmt(video.duration); });
+video.addEventListener('loadedmetadata', () => { updateLiveBtnUI(); });
 video.addEventListener('timeupdate', () => { if (!dragging) updProgress(); });
 video.addEventListener('progress', () => {
     if (video.buffered.length > 0 && video.duration)
@@ -362,6 +627,140 @@ if (video.paused) {
 playPauseBtn.querySelector('.icon-pause').style.display = 'none';
 playPauseBtn.querySelector('.icon-play').style.display = '';
 
-document.getElementById('closeBtn').addEventListener('click', () => showHint('Close'));
-document.getElementById('moreBtn').addEventListener('click', () => showHint('More'));
-document.getElementById('titleLink').addEventListener('click', () => showHint('Video page'));
+// Ensure playback on load (autoplay + muted)
+video.muted = true;
+video.autoplay = true;
+video.playsInline = true;
+video.play().catch(() => { });
+
+document.getElementById('closeBtn').addEventListener('click', () => showHint('إغلاق'));
+
+let morePanelHoverCloseTimer = null;
+let morePanelOpenedByHover = false;
+
+function scheduleMorePanelClose() {
+    if (morePanelHoverCloseTimer) clearTimeout(morePanelHoverCloseTimer);
+    morePanelHoverCloseTimer = setTimeout(() => {
+        closeMorePanel();
+        morePanelOpenedByHover = false;
+    }, 350);
+}
+function cancelMorePanelClose() {
+    if (morePanelHoverCloseTimer) clearTimeout(morePanelHoverCloseTimer);
+    morePanelHoverCloseTimer = null;
+}
+
+moreBtn.addEventListener('mouseenter', () => {
+    cancelMorePanelClose();
+    morePanelOpenedByHover = true;
+    showMorePanel();
+});
+
+// Track mouse movement - only close panel when mouse leaves ABOVE the panel
+document.addEventListener('mousemove', (e) => {
+    if (!morePanel.classList.contains('show') || !morePanelOpenedByHover) return;
+    
+    const panelRect = morePanel.getBoundingClientRect();
+    const controlsEl = document.getElementById('bottomControls');
+    const controlsRect = controlsEl.getBoundingClientRect();
+    
+    // Mouse is inside the panel area - keep open
+    if (e.clientX >= panelRect.left && e.clientX <= panelRect.right && 
+        e.clientY >= panelRect.top && e.clientY <= panelRect.bottom) {
+        cancelMorePanelClose();
+        return;
+    }
+    
+    // Mouse is in the bottom controls area - keep open
+    if (e.clientX >= controlsRect.left && e.clientX <= controlsRect.right && 
+        e.clientY >= controlsRect.top && e.clientY <= controlsRect.bottom) {
+        cancelMorePanelClose();
+        return;
+    }
+    
+    // Mouse went above the panel (into video area) - close
+    if (e.clientY < panelRect.top) {
+        scheduleMorePanelClose();
+    }
+});
+
+moreBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMorePanel(); });
+morePanel.addEventListener('click', (e) => {
+    if (e.target === morePanel || (e.target.closest('.more-panel-inner') && !e.target.closest('.more-btn, .more-card, a'))) {
+        closeMorePanel();
+    }
+});
+document.getElementById('titleLink').addEventListener('click', () => showHint('صفحة الفيديو'));
+if (titleIcon) {
+    titleIcon.addEventListener('click', () => showHint('صفحة الفيديو'));
+}
+
+if (moreBtnLive && moreBtnRelated) {
+    moreBtnLive.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('live'); });
+    moreBtnRelated.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('related'); });
+}
+
+document.querySelectorAll('.more-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+        if (morePanel.dataset.mode !== 'live') return;
+        e.stopPropagation();
+        selectMoreCard(card);
+    });
+});
+
+if (moreSideBySide) {
+    moreSideBySide.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sideSrc = getSideBySideSrc();
+        if (!sideSrc) return;
+        enterMultiView(sideSrc);
+        closeMorePanel();
+    });
+}
+
+if (moreReplace) {
+    moreReplace.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!selectedMoreVideo) return;
+        exitMultiView();
+        video.src = selectedMoreVideo;
+        video.load();
+        video.play().catch(() => { });
+        isLiveMode = true;
+        updateLiveBtnUI();
+        if (thumbVideo) {
+            thumbVideo.src = video.src;
+        }
+        closeMorePanel();
+    });
+}
+
+if (secondaryView) {
+    secondaryView.addEventListener('click', (e) => {
+        if (!player.classList.contains('multi-view-active')) return;
+        e.stopPropagation();
+        secondaryView.classList.toggle('selected');
+    });
+}
+
+if (makePrimaryBtn) {
+    makePrimaryBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        swapPrimarySecondary();
+    });
+}
+
+if (closeSecondaryBtn) {
+    closeSecondaryBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        exitMultiView();
+    });
+}
+
+setMoreMode('live');
+
+const controlsLeft = document.querySelector('.controls-left');
+controlsLeft.addEventListener('mouseenter', () => {
+    closeMorePanel();
+});
+
