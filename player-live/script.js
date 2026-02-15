@@ -21,6 +21,7 @@ const moreBtn = document.getElementById('moreBtn');
 const morePanel = document.getElementById('morePanel');
 const moreBtnLive = document.getElementById('moreBtnLive');
 const moreBtnRelated = document.getElementById('moreBtnRelated');
+const collapseBtn = document.getElementById('collapseBtn');
 const moreActions = document.getElementById('moreActions');
 const moreSideBySide = document.getElementById('moreSideBySide');
 const moreReplace = document.getElementById('moreReplace');
@@ -48,6 +49,7 @@ let selectedMoreVideo = '';
 let isMultiView = false;
 const primaryDefaultSrc = video?.dataset?.defaultSrc || '';
 const secondaryDefaultSrc = secondaryVideo?.dataset?.defaultSrc || '';
+let moreOpenMode = 'none'; // none | peek | full
 
 // ===== HELPERS =====
 function fmt(s) {
@@ -339,27 +341,49 @@ function selectCommentator(el) {
 }
 
 // ===== MORE PANEL =====
-function showMorePanel() {
+function showMorePanel(mode = 'full') {
     morePanel.classList.add('show');
     morePanel.setAttribute('aria-hidden', 'false');
-    player.classList.add('popover-open', 'more-open');
+    if (mode === 'full') {
+        morePanel.classList.remove('peek');
+        player.classList.remove('more-peek');
+        player.classList.add('popover-open', 'more-open');
+    } else {
+        morePanel.classList.add('peek');
+        player.classList.add('more-peek');
+    }
+    moreOpenMode = mode;
     player.classList.remove('controls-hidden', 'hide-cursor');
     clearTimeout(hideTimer);
 }
 
 function closeMorePanel() {
     morePanel.classList.remove('show');
+    morePanel.classList.remove('peek');
     morePanel.setAttribute('aria-hidden', 'true');
-    player.classList.remove('more-open');
-    if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show')) {
-        player.classList.remove('popover-open');
+    player.classList.remove('more-peek');
+    if (moreOpenMode === 'full') {
+        player.classList.remove('more-open');
+        if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show')) {
+            player.classList.remove('popover-open');
+        }
     }
+    moreOpenMode = 'none';
     clearMoreSelection();
 }
 
+function collapsePlayer() {
+    closeMorePanel();
+    closePopover(qualityPopover, qualityHideTimer);
+    closePopover(commentatorPopover, commentatorHideTimer);
+}
+
 function toggleMorePanel() {
-    if (morePanel.classList.contains('show')) closeMorePanel();
-    else showMorePanel();
+    if (moreOpenMode === 'full') {
+        closeMorePanel();
+        return;
+    }
+    showMorePanel('full');
 }
 
 function getCardVideo(card) {
@@ -636,11 +660,79 @@ document.getElementById('titleLink').addEventListener('click', () => showHint('�
 if (titleIcon) {
     titleIcon.addEventListener('click', () => showHint('صفحة الفيديو'));
 }
+if (collapseBtn) {
+    collapseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        collapsePlayer();
+    });
+}
+
+let moreHoverTimer;
+moreBtn.addEventListener('mouseenter', () => {
+    clearTimeout(moreHoverTimer);
+    if (moreOpenMode !== 'full') {
+        showMorePanel('peek');
+    }
+});
+moreBtn.addEventListener('mouseleave', (e) => {
+    const to = e.relatedTarget;
+    if (to && (morePanel.contains(to) || to.closest('#bottomControls'))) return;
+    if (moreOpenMode === 'peek') moreHoverTimer = setTimeout(() => closeMorePanel(), 350);
+});
+morePanel.addEventListener('mouseenter', () => clearTimeout(moreHoverTimer));
+morePanel.addEventListener('mouseleave', (e) => {
+    const to = e.relatedTarget;
+    if (to && (moreBtn.contains(to) || to.closest('#bottomControls'))) return;
+    if (moreOpenMode === 'peek') moreHoverTimer = setTimeout(() => closeMorePanel(), 350);
+});
 
 if (moreBtnLive && moreBtnRelated) {
     moreBtnLive.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('live'); });
     moreBtnRelated.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('related'); });
 }
+
+// إخفاء شريط التقدم فقط عند الهوفر على الأيقونات التي تفتح قوائم (جودة، معلق، صوت، المزيد)
+const progressHideOnHoverSelectors = '#qualityAnchor, #commentatorAnchor, #audioAnchor, #moreBtn';
+let iconHoverTimer;
+document.querySelectorAll(progressHideOnHoverSelectors).forEach((el) => {
+    el.addEventListener('mouseenter', () => {
+        clearTimeout(iconHoverTimer);
+        player.classList.add('icon-hover');
+    });
+    el.addEventListener('mouseleave', () => {
+        iconHoverTimer = setTimeout(() => {
+            player.classList.remove('icon-hover');
+        }, 120);
+    });
+});
+
+let morePointerRaf = null;
+let morePointerCloseTimer = null;
+document.addEventListener('pointermove', (e) => {
+    if (moreOpenMode !== 'peek') return;
+    if (morePointerRaf) return;
+    morePointerRaf = requestAnimationFrame(() => {
+        morePointerRaf = null;
+        const x = e.clientX;
+        const y = e.clientY;
+        const btnRect = moreBtn.getBoundingClientRect();
+        const panelRect = morePanel.getBoundingClientRect();
+        const controlsEl = document.getElementById('bottomControls');
+        const controlsRect = controlsEl.getBoundingClientRect();
+        const inBtn = x >= btnRect.left && x <= btnRect.right && y >= btnRect.top && y <= btnRect.bottom;
+        const inPanel = x >= panelRect.left && x <= panelRect.right && y >= panelRect.top && y <= panelRect.bottom;
+        const inControls = x >= controlsRect.left && x <= controlsRect.right && y >= controlsRect.top && y <= controlsRect.bottom;
+        // Safe zone: between panel top and controls bottom
+        const inGap = y >= panelRect.bottom && y <= controlsRect.top && x >= panelRect.left && x <= panelRect.right;
+        if (inBtn || inPanel || inControls || inGap) {
+            if (morePointerCloseTimer) { clearTimeout(morePointerCloseTimer); morePointerCloseTimer = null; }
+        } else {
+            if (!morePointerCloseTimer) {
+                morePointerCloseTimer = setTimeout(() => { closeMorePanel(); morePointerCloseTimer = null; }, 300);
+            }
+        }
+    });
+});
 
 document.querySelectorAll('.more-card').forEach(card => {
     card.addEventListener('click', (e) => {
@@ -700,3 +792,8 @@ if (closeSecondaryBtn) {
 }
 
 setMoreMode('live');
+
+const controlsLeft = document.querySelector('.controls-left');
+controlsLeft.addEventListener('mouseenter', () => {
+    closeMorePanel();
+});

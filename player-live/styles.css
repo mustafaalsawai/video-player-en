@@ -1,4 +1,4 @@
-@import url("/player-live/fonts/stylesheet.css");
+@import url("fonts/stylesheet.css");
 
 :root {
   --white: #ffffff;
@@ -10,6 +10,7 @@
   --white-12: rgba(255, 255, 255, 0.12);
   --white-8: rgba(255, 255, 255, 0.08);
   --hover-bg: rgba(0, 0, 0, 0.38);
+  --icon-hover-bg: var(--Backgrounds-BoxBg, rgba(255, 255, 255, 0.12));
   --progress-bg: rgba(255, 255, 255, 0.2);
   --progress-buffer: rgba(255, 255, 255, 0.35);
   --icon-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
@@ -238,12 +239,11 @@ body {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.48) 28%,
-    rgba(0, 0, 0, 0.26) 52%,
-    rgba(0, 0, 0, 0.12) 70%,
-    rgba(0, 0, 0, 0) 82%
+    180deg,
+    transparent,
+    rgba(0, 0, 0, 0.6) 44.64%,
+    rgba(0, 0, 0, 0.7) 75%,
+    #000
   );
   opacity: 0;
   transition: opacity 0.25s ease;
@@ -251,7 +251,7 @@ body {
   z-index: 1;
 }
 
-.player.more-open .video-layer::after {
+.player:not(.controls-hidden) .video-layer::after {
   opacity: 1;
 }
 
@@ -395,8 +395,9 @@ video[controls]::-webkit-media-controls {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 50%;
-  background: var(--hover-bg);
+  border-radius: 99px;
+  background: var(--icon-hover-bg);
+  backdrop-filter: blur(12px);
   opacity: 0;
   transform: scale(0.85);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -447,8 +448,9 @@ video[controls]::-webkit-media-controls {
   content: "";
   position: absolute;
   inset: 2px;
-  border-radius: 50%;
-  background: var(--hover-bg);
+  border-radius: 99px;
+  background: var(--icon-hover-bg);
+  backdrop-filter: blur(12px);
   opacity: 0;
   transform: scale(0.85);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -507,8 +509,9 @@ video[controls]::-webkit-media-controls {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 50%;
-  background: var(--hover-bg);
+  border-radius: 99px;
+  background: var(--icon-hover-bg);
+  backdrop-filter: blur(12px);
   opacity: 0;
   transform: scale(0.85);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -546,10 +549,16 @@ video[controls]::-webkit-media-controls {
   transition: opacity 0.5s ease-out;
 }
 
+
 .player.controls-hidden .top-bar,
 .player.controls-hidden .bottom-controls,
 .player.controls-hidden .grad-top,
 .player.controls-hidden .grad-bottom {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.player.more-open .bottom-controls {
   opacity: 0;
   pointer-events: none;
 }
@@ -685,8 +694,9 @@ video[controls]::-webkit-media-controls {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 50%;
-  background: var(--hover-bg);
+  border-radius: 99px;
+  background: var(--icon-hover-bg);
+  backdrop-filter: blur(12px);
   opacity: 0;
   transform: scale(0.85);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -698,6 +708,15 @@ video[controls]::-webkit-media-controls {
 }
 
 .btn:hover::before {
+  opacity: 1;
+  transform: scale(1.22);
+}
+
+/* أيقونة المزيد: نفس حجم دائرة الهوفر مثل باقي الأيقونات (نستخدم ::before مع scale 1.22) */
+#moreBtn {
+  border-radius: 99px;
+}
+#moreBtn:hover::before {
   opacity: 1;
   transform: scale(1.22);
 }
@@ -782,7 +801,9 @@ video[controls]::-webkit-media-controls {
 }
 
 .volume-group:hover {
-  background: var(--hover-bg);
+  border-radius: 99px;
+  background: var(--icon-hover-bg);
+  backdrop-filter: blur(12px);
 }
 
 /* إلغاء هوفر الدائرة على أيقونة الصوت؛ الهوفر يفتح مع المجموعة والشريط */
@@ -877,7 +898,9 @@ video[controls]::-webkit-media-controls {
 }
 
 .live-btn:hover {
-  background: var(--hover-bg);
+  border-radius: 99px;
+  background: var(--icon-hover-bg);
+  backdrop-filter: blur(12px);
   color: var(--white);
 }
 
@@ -1264,15 +1287,15 @@ video[controls]::-webkit-media-controls {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 68px;
+  bottom: 112px;
   padding: 0;
   z-index: 40;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(10px);
+  transform: translateY(12px);
   transition:
     opacity 0.25s ease,
-    transform 0.25s ease;
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   direction: rtl;
   font-family: var(--font-family-sans, "Thmanyah sans 1.2");
 }
@@ -1288,7 +1311,7 @@ video[controls]::-webkit-media-controls {
   flex-direction: column;
   background: none;
   border-radius: 24px;
-  padding: 20px 0 16px;
+  padding: 12px 0 0;
   border: none;
   backdrop-filter: none;
   position: relative;
@@ -1297,10 +1320,17 @@ video[controls]::-webkit-media-controls {
 
 .more-panel-header {
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: 24px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
   text-align: right;
   padding-inline: 24px;
+  gap: 12px;
+}
+
+.more-panel-tabs {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
@@ -1325,6 +1355,16 @@ video[controls]::-webkit-media-controls {
   padding-inline: 16px;
 }
 
+.more-panel-collapse.btn {
+  width: 40px;
+  height: 40px;
+}
+
+.more-panel-collapse.btn svg {
+  width: 22px;
+  height: 22px;
+}
+
 .more-btn-primary {
   background: var(--components-button-secondary-btn-secondary-bg, #fff);
   color: #111;
@@ -1347,12 +1387,49 @@ video[controls]::-webkit-media-controls {
   display: flex;
   gap: 20px;
   overflow-x: auto;
-  padding-bottom: 32px;
+  padding-bottom: 24px;
   padding-inline: 24px;
+  scrollbar-width: none;
+}
+
+.more-cards:hover {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.more-cards::-webkit-scrollbar {
+  height: 0;
+}
+
+.more-cards:hover::-webkit-scrollbar {
+  height: 4px;
+}
+
+.more-cards::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+  margin-inline: 24px;
+}
+
+.more-cards:hover::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.more-cards::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.more-cards:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.more-cards:hover::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .more-actions {
-  display: flex;
+  display: none;
   gap: 12px;
   padding-inline: 24px;
   margin-top: 24px;
@@ -1366,6 +1443,7 @@ video[controls]::-webkit-media-controls {
 }
 
 .more-actions.show {
+  display: flex;
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -1626,7 +1704,10 @@ video[controls]::-webkit-media-controls {
 }
 
 /* إخفاء شريط التقدم بسلاسة عند ظهور القوائم */
-.player.popover-open .progress-wrap {
+.player.popover-open .progress-wrap,
+.player.icon-hover .progress-wrap,
+.player.more-open .progress-wrap,
+.player.more-peek .progress-wrap {
   opacity: 0;
   pointer-events: none;
   transform: translateY(10px);
