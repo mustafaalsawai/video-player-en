@@ -21,7 +21,6 @@ const moreBtn = document.getElementById('moreBtn');
 const morePanel = document.getElementById('morePanel');
 const moreBtnLive = document.getElementById('moreBtnLive');
 const moreBtnRelated = document.getElementById('moreBtnRelated');
-const collapseBtn = document.getElementById('collapseBtn');
 const moreActions = document.getElementById('moreActions');
 const moreSideBySide = document.getElementById('moreSideBySide');
 const moreReplace = document.getElementById('moreReplace');
@@ -49,7 +48,6 @@ let selectedMoreVideo = '';
 let isMultiView = false;
 const primaryDefaultSrc = video?.dataset?.defaultSrc || '';
 const secondaryDefaultSrc = secondaryVideo?.dataset?.defaultSrc || '';
-let moreOpenMode = 'none'; // none | peek | full
 
 // ===== HELPERS =====
 function fmt(s) {
@@ -159,27 +157,39 @@ function updateVolBg() {
     volSlider.style.background = `linear-gradient(to right, #fff ${v}%, rgba(255,255,255,0.2) ${v}%)`;
 }
 
+function updateVolumeIcon() {
+    const on = volumeBtn.querySelector('.icon-vol-on'), mid = volumeBtn.querySelector('.icon-vol-mid'), off = volumeBtn.querySelector('.icon-vol-off');
+    const v = parseFloat(volSlider.value);
+    on.style.display = 'none'; mid.style.display = 'none'; off.style.display = 'none';
+    if (isMuted || v === 0) off.style.display = '';
+    else if (v <= 0.5) mid.style.display = '';
+    else on.style.display = '';
+}
+
 function toggleMute() {
     isMuted = !isMuted;
-    const on = volumeBtn.querySelector('.icon-vol-on'), off = volumeBtn.querySelector('.icon-vol-off');
-    if (isMuted) { prevVol = parseFloat(volSlider.value); volSlider.value = 0; video.muted = true; on.style.display = 'none'; off.style.display = ''; }
-    else { volSlider.value = prevVol; video.muted = false; on.style.display = ''; off.style.display = 'none'; }
+    if (isMuted) { prevVol = parseFloat(volSlider.value); volSlider.value = 0; video.muted = true; }
+    else { volSlider.value = prevVol; video.volume = prevVol; video.muted = false; }
     updateVolBg();
+    updateVolumeIcon();
 }
 
 volumeBtn.addEventListener('click', toggleMute);
 volSlider.addEventListener('input', () => {
     const v = parseFloat(volSlider.value); video.volume = v;
-    const on = volumeBtn.querySelector('.icon-vol-on'), off = volumeBtn.querySelector('.icon-vol-off');
-    if (v === 0) { on.style.display = 'none'; off.style.display = ''; isMuted = true; }
-    else { on.style.display = ''; off.style.display = 'none'; isMuted = false; }
+    if (v === 0) isMuted = true;
+    else isMuted = false;
     updateVolBg();
+    updateVolumeIcon();
 });
 updateVolBg();
+updateVolumeIcon();
 
 // ===== PROGRESS + THUMBNAIL PREVIEW =====
+// المعاينة تحتاج تشغيل الصفحة من سيرفر (http) وليس file:// وإلا الـ canvas يبقى أسود (قيد أمان المتصفح)
 const thumbVideo = document.createElement('video');
-thumbVideo.crossOrigin = 'anonymous';
+const isLocalFile = !video.src || video.src.startsWith('file:');
+if (!isLocalFile) thumbVideo.crossOrigin = 'anonymous';
 thumbVideo.preload = 'auto';
 thumbVideo.muted = true;
 thumbVideo.playsInline = true;
@@ -226,9 +236,8 @@ function updateProgressPreview(e) {
     }
 }
 
-progressWrap.addEventListener('mousemove', e => {
-    updateProgressPreview(e);
-});
+progressWrap.addEventListener('mouseenter', e => updateProgressPreview(e));
+progressWrap.addEventListener('mousemove', e => updateProgressPreview(e));
 progressWrap.addEventListener('mousedown', e => { dragging = true; progressWrap.classList.add('dragging'); seekTo(e); });
 document.addEventListener('mousemove', e => {
     if (dragging) {
@@ -341,49 +350,27 @@ function selectCommentator(el) {
 }
 
 // ===== MORE PANEL =====
-function showMorePanel(mode = 'full') {
+function showMorePanel() {
     morePanel.classList.add('show');
     morePanel.setAttribute('aria-hidden', 'false');
-    if (mode === 'full') {
-        morePanel.classList.remove('peek');
-        player.classList.remove('more-peek');
-        player.classList.add('popover-open', 'more-open');
-    } else {
-        morePanel.classList.add('peek');
-        player.classList.add('more-peek');
-    }
-    moreOpenMode = mode;
+    player.classList.add('popover-open', 'more-open');
     player.classList.remove('controls-hidden', 'hide-cursor');
     clearTimeout(hideTimer);
 }
 
 function closeMorePanel() {
     morePanel.classList.remove('show');
-    morePanel.classList.remove('peek');
     morePanel.setAttribute('aria-hidden', 'true');
-    player.classList.remove('more-peek');
-    if (moreOpenMode === 'full') {
-        player.classList.remove('more-open');
-        if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show')) {
-            player.classList.remove('popover-open');
-        }
+    player.classList.remove('more-open');
+    if (!qualityPopover.classList.contains('show') && !commentatorPopover.classList.contains('show')) {
+        player.classList.remove('popover-open');
     }
-    moreOpenMode = 'none';
     clearMoreSelection();
 }
 
-function collapsePlayer() {
-    closeMorePanel();
-    closePopover(qualityPopover, qualityHideTimer);
-    closePopover(commentatorPopover, commentatorHideTimer);
-}
-
 function toggleMorePanel() {
-    if (moreOpenMode === 'full') {
-        closeMorePanel();
-        return;
-    }
-    showMorePanel('full');
+    if (morePanel.classList.contains('show')) closeMorePanel();
+    else showMorePanel();
 }
 
 function getCardVideo(card) {
@@ -557,6 +544,10 @@ document.addEventListener('click', (e) => {
     }
     if (!morePanel.contains(e.target) && !moreBtn.contains(e.target)) {
         closeMorePanel();
+    } else if (morePanel.classList.contains('show') && morePanel.contains(e.target)) {
+        if (!e.target.closest('.more-btn, .more-card, a')) {
+            closeMorePanel();
+        }
     }
     if (secondaryView && secondaryView.classList.contains('selected') && !secondaryView.contains(e.target)) {
         secondaryView.classList.remove('selected');
@@ -654,85 +645,71 @@ video.playsInline = true;
 video.play().catch(() => { });
 
 document.getElementById('closeBtn').addEventListener('click', () => showHint('إغلاق'));
+
+let morePanelHoverCloseTimer = null;
+let morePanelOpenedByHover = false;
+
+function scheduleMorePanelClose() {
+    if (morePanelHoverCloseTimer) clearTimeout(morePanelHoverCloseTimer);
+    morePanelHoverCloseTimer = setTimeout(() => {
+        closeMorePanel();
+        morePanelOpenedByHover = false;
+    }, 350);
+}
+function cancelMorePanelClose() {
+    if (morePanelHoverCloseTimer) clearTimeout(morePanelHoverCloseTimer);
+    morePanelHoverCloseTimer = null;
+}
+
+moreBtn.addEventListener('mouseenter', () => {
+    cancelMorePanelClose();
+    morePanelOpenedByHover = true;
+    showMorePanel();
+});
+
+// Track mouse movement - only close panel when mouse leaves ABOVE the panel
+document.addEventListener('mousemove', (e) => {
+    if (!morePanel.classList.contains('show') || !morePanelOpenedByHover) return;
+    
+    const panelRect = morePanel.getBoundingClientRect();
+    const controlsEl = document.getElementById('bottomControls');
+    const controlsRect = controlsEl.getBoundingClientRect();
+    
+    // Mouse is inside the panel area - keep open
+    if (e.clientX >= panelRect.left && e.clientX <= panelRect.right && 
+        e.clientY >= panelRect.top && e.clientY <= panelRect.bottom) {
+        cancelMorePanelClose();
+        return;
+    }
+    
+    // Mouse is in the bottom controls area - keep open
+    if (e.clientX >= controlsRect.left && e.clientX <= controlsRect.right && 
+        e.clientY >= controlsRect.top && e.clientY <= controlsRect.bottom) {
+        cancelMorePanelClose();
+        return;
+    }
+    
+    // Mouse went above the panel (into video area) - close
+    if (e.clientY < panelRect.top) {
+        scheduleMorePanelClose();
+    }
+});
+
 moreBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMorePanel(); });
-morePanel.addEventListener('click', (e) => e.stopPropagation());
+morePanel.addEventListener('click', (e) => {
+    if (e.target === morePanel || (e.target.closest('.more-panel-inner') && !e.target.closest('.more-btn, .more-card, a'))) {
+        closeMorePanel();
+    }
+});
 document.getElementById('titleLink').addEventListener('click', () => showHint('صفحة الفيديو'));
 if (titleIcon) {
     titleIcon.addEventListener('click', () => showHint('صفحة الفيديو'));
 }
-if (collapseBtn) {
-    collapseBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        collapsePlayer();
-    });
-}
-
-let moreHoverTimer;
-moreBtn.addEventListener('mouseenter', () => {
-    clearTimeout(moreHoverTimer);
-    if (moreOpenMode !== 'full') {
-        showMorePanel('peek');
-    }
-});
-moreBtn.addEventListener('mouseleave', (e) => {
-    const to = e.relatedTarget;
-    if (to && (morePanel.contains(to) || to.closest('#bottomControls'))) return;
-    if (moreOpenMode === 'peek') moreHoverTimer = setTimeout(() => closeMorePanel(), 350);
-});
-morePanel.addEventListener('mouseenter', () => clearTimeout(moreHoverTimer));
-morePanel.addEventListener('mouseleave', (e) => {
-    const to = e.relatedTarget;
-    if (to && (moreBtn.contains(to) || to.closest('#bottomControls'))) return;
-    if (moreOpenMode === 'peek') moreHoverTimer = setTimeout(() => closeMorePanel(), 350);
-});
 
 if (moreBtnLive && moreBtnRelated) {
     moreBtnLive.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('live'); });
     moreBtnRelated.addEventListener('click', (e) => { e.stopPropagation(); setMoreMode('related'); });
 }
-
-// إخفاء شريط التقدم فقط عند الهوفر على الأيقونات التي تفتح قوائم (جودة، معلق، صوت، المزيد)
-const progressHideOnHoverSelectors = '#qualityAnchor, #commentatorAnchor, #audioAnchor, #moreBtn';
-let iconHoverTimer;
-document.querySelectorAll(progressHideOnHoverSelectors).forEach((el) => {
-    el.addEventListener('mouseenter', () => {
-        clearTimeout(iconHoverTimer);
-        player.classList.add('icon-hover');
-    });
-    el.addEventListener('mouseleave', () => {
-        iconHoverTimer = setTimeout(() => {
-            player.classList.remove('icon-hover');
-        }, 120);
-    });
-});
-
-let morePointerRaf = null;
-let morePointerCloseTimer = null;
-document.addEventListener('pointermove', (e) => {
-    if (moreOpenMode !== 'peek') return;
-    if (morePointerRaf) return;
-    morePointerRaf = requestAnimationFrame(() => {
-        morePointerRaf = null;
-        const x = e.clientX;
-        const y = e.clientY;
-        const btnRect = moreBtn.getBoundingClientRect();
-        const panelRect = morePanel.getBoundingClientRect();
-        const controlsEl = document.getElementById('bottomControls');
-        const controlsRect = controlsEl.getBoundingClientRect();
-        const inBtn = x >= btnRect.left && x <= btnRect.right && y >= btnRect.top && y <= btnRect.bottom;
-        const inPanel = x >= panelRect.left && x <= panelRect.right && y >= panelRect.top && y <= panelRect.bottom;
-        const inControls = x >= controlsRect.left && x <= controlsRect.right && y >= controlsRect.top && y <= controlsRect.bottom;
-        // Safe zone: between panel top and controls bottom
-        const inGap = y >= panelRect.bottom && y <= controlsRect.top && x >= panelRect.left && x <= panelRect.right;
-        if (inBtn || inPanel || inControls || inGap) {
-            if (morePointerCloseTimer) { clearTimeout(morePointerCloseTimer); morePointerCloseTimer = null; }
-        } else {
-            if (!morePointerCloseTimer) {
-                morePointerCloseTimer = setTimeout(() => { closeMorePanel(); morePointerCloseTimer = null; }, 300);
-            }
-        }
-    });
-});
 
 document.querySelectorAll('.more-card').forEach(card => {
     card.addEventListener('click', (e) => {

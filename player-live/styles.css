@@ -10,10 +10,9 @@
   --white-12: rgba(255, 255, 255, 0.12);
   --white-8: rgba(255, 255, 255, 0.08);
   --hover-bg: rgba(0, 0, 0, 0.38);
-  --icon-hover-bg: var(--Backgrounds-BoxBg, rgba(255, 255, 255, 0.12));
   --progress-bg: rgba(255, 255, 255, 0.2);
   --progress-buffer: rgba(255, 255, 255, 0.35);
-  --icon-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+  --icon-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 50%));
   --font: "thmanyah sans", sans-serif;
 }
 
@@ -113,23 +112,33 @@ body {
   gap: 24px;
   padding: 0 32px;
   flex-direction: row-reverse;
+  align-items: center;
+  justify-content: center;
 }
 
 .player.multi-view-active .primary-view {
-  height: 515.163px;
-  flex: 1 0 0;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  max-height: 100%;
   aspect-ratio: 204 / 115;
+  height: auto;
   border-radius: 24px;
   overflow: hidden;
   background: #000;
 }
 
 .player.multi-view-active .secondary-view {
-  width: 431.746px;
-  height: 242.857px;
+  flex: 0 0 auto;
+  width: min(42%, 420px);
+  min-width: 200px;
+  max-width: 100%;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  max-height: 100%;
   opacity: 1;
   pointer-events: auto;
-  aspect-ratio: 16 / 9;
   border-radius: 24px;
   overflow: hidden;
   background: #000;
@@ -175,20 +184,18 @@ body {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.25) 0%,
-    rgba(0, 0, 0, 0.1) 40%,
-    rgba(0, 0, 0, 0.06) 60%,
-    rgba(0, 0, 0, 0.32) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(0, 0, 0, 0.25) 0%,
+      rgba(0, 0, 0, 0.1) 40%,
+      rgba(0, 0, 0, 0.06) 60%,
+      rgba(0, 0, 0, 0.32) 100%);
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;
   z-index: 0;
 }
 
-.secondary-overlay > * {
+.secondary-overlay>* {
   position: relative;
   z-index: 1;
 }
@@ -238,20 +245,19 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgba(0, 0, 0, 0.6) 44.64%,
-    rgba(0, 0, 0, 0.7) 75%,
-    #000
-  );
+  background: linear-gradient(0deg,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.48) 28%,
+      rgba(0, 0, 0, 0.26) 52%,
+      rgba(0, 0, 0, 0.12) 70%,
+      rgba(0, 0, 0, 0) 82%);
   opacity: 0;
   transition: opacity 0.25s ease;
   pointer-events: none;
   z-index: 1;
 }
 
-.player:not(.controls-hidden) .video-layer::after {
+.player.more-open .video-layer::after {
   opacity: 1;
 }
 
@@ -395,9 +401,8 @@ video[controls]::-webkit-media-controls {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 99px;
-  background: var(--icon-hover-bg);
-  backdrop-filter: blur(12px);
+  border-radius: 50%;
+  background: var(--hover-bg);
   opacity: 0;
   transform: scale(0.85);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -425,6 +430,7 @@ video[controls]::-webkit-media-controls {
   align-items: center;
   gap: 4px;
 }
+
 .title-icon {
   display: flex;
   align-items: center;
@@ -448,9 +454,8 @@ video[controls]::-webkit-media-controls {
   content: "";
   position: absolute;
   inset: 2px;
-  border-radius: 99px;
-  background: var(--icon-hover-bg);
-  backdrop-filter: blur(12px);
+  border-radius: 50%;
+  background: var(--hover-bg);
   opacity: 0;
   transform: scale(0.85);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -467,6 +472,7 @@ video[controls]::-webkit-media-controls {
   height: 22px;
   filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.22));
 }
+
 .title-link {
   color: var(--text-text-secondary, rgb(255, 255, 255));
   font-feature-settings: "ss01" on;
@@ -474,7 +480,8 @@ video[controls]::-webkit-media-controls {
   font-size: var(--font-headline-lg-text-size, 24px);
   font-style: normal;
   font-weight: 500;
-  line-height: var(--font-headline-md-line-height, 24px); /* 100% */
+  line-height: var(--font-headline-md-line-height, 24px);
+  /* 100% */
   text-decoration: none;
   padding: 15px 4px 15px 0;
   border-radius: 30px;
@@ -485,6 +492,7 @@ video[controls]::-webkit-media-controls {
 .title-link:active {
   background: var(--white-8);
 }
+
 .pip-btn {
   background: none;
   border: none;
@@ -509,9 +517,8 @@ video[controls]::-webkit-media-controls {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 99px;
-  background: var(--icon-hover-bg);
-  backdrop-filter: blur(12px);
+  border-radius: 50%;
+  background: var(--hover-bg);
   opacity: 0;
   transform: scale(0.85);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -547,18 +554,13 @@ video[controls]::-webkit-media-controls {
   padding: 0 24px 18px;
   z-index: 20;
   transition: opacity 0.5s ease-out;
+  overflow: visible;
 }
-
 
 .player.controls-hidden .top-bar,
 .player.controls-hidden .bottom-controls,
 .player.controls-hidden .grad-top,
 .player.controls-hidden .grad-bottom {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.player.more-open .bottom-controls {
   opacity: 0;
   pointer-events: none;
 }
@@ -569,6 +571,7 @@ video[controls]::-webkit-media-controls {
   padding: 10px 0 14px;
   cursor: pointer;
   position: relative;
+  overflow: visible;
 }
 
 .progress-track {
@@ -694,9 +697,8 @@ video[controls]::-webkit-media-controls {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 99px;
-  background: var(--icon-hover-bg);
-  backdrop-filter: blur(12px);
+  border-radius: 50%;
+  background: var(--hover-bg);
   opacity: 0;
   transform: scale(0.85);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -708,15 +710,6 @@ video[controls]::-webkit-media-controls {
 }
 
 .btn:hover::before {
-  opacity: 1;
-  transform: scale(1.22);
-}
-
-/* أيقونة المزيد: نفس حجم دائرة الهوفر مثل باقي الأيقونات (نستخدم ::before مع scale 1.22) */
-#moreBtn {
-  border-radius: 99px;
-}
-#moreBtn:hover::before {
   opacity: 1;
   transform: scale(1.22);
 }
@@ -760,18 +753,19 @@ video[controls]::-webkit-media-controls {
 
 /* ===== TOOLTIP ===== */
 .btn .tip,
-.pip-btn .tip {
+.pip-btn .tip,
+.close-btn .tip {
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + 12px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(18, 18, 18, 0.92);
-  backdrop-filter: blur(12px);
+  border-radius: var(--radius-full, 512px);
+  background: var(--alpha-alpha-black-40, rgba(0, 0, 0, 0.40));
+  backdrop-filter: blur(10px);
   color: var(--white);
   font-size: 11.5px;
   font-weight: 400;
   padding: 5px 10px;
-  border-radius: 6px;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
@@ -780,15 +774,23 @@ video[controls]::-webkit-media-controls {
   direction: rtl;
 }
 
-/* تعطيل الهنت النصي بالكامل */
-.btn .tip,
-.pip-btn .tip {
+/* إخفاء التولتيب فقط عند الأزرار التي تفتح خيارات (popover أو لوحة المزيد) */
+.popover-anchor .btn .tip,
+#moreBtn .tip {
   display: none !important;
 }
 
 .btn:hover .tip,
-.pip-btn:hover .tip {
+.pip-btn:hover .tip,
+.close-btn:hover .tip {
   opacity: 1;
+}
+
+/* تولتيب الأيقونات في الشريط العلوي (الإغلاق، صورة في صورة) يظهر تحت */
+.top-bar .close-btn .tip,
+.top-bar .pip-btn .tip {
+  bottom: auto;
+  top: calc(100% + 12px);
 }
 
 /* ===== VOLUME ===== */
@@ -801,9 +803,7 @@ video[controls]::-webkit-media-controls {
 }
 
 .volume-group:hover {
-  border-radius: 99px;
-  background: var(--icon-hover-bg);
-  backdrop-filter: blur(12px);
+  background: var(--hover-bg);
 }
 
 /* إلغاء هوفر الدائرة على أيقونة الصوت؛ الهوفر يفتح مع المجموعة والشريط */
@@ -840,25 +840,25 @@ video[controls]::-webkit-media-controls {
   margin: 0 10px 0 4px;
 }
 
+/* إخفاء دائرة التحكم؛ التحكم فقط عبر طبقة اللون الأبيض (الشريط) */
 .vol-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 12px;
   height: 12px;
-  background: var(--white);
+  background: transparent;
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  transition: transform 0.12s;
+  box-shadow: none;
 }
 
 .vol-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.25);
+  transform: none;
 }
 
 .vol-slider::-moz-range-thumb {
   width: 12px;
   height: 12px;
-  background: var(--white);
+  background: transparent;
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -898,9 +898,7 @@ video[controls]::-webkit-media-controls {
 }
 
 .live-btn:hover {
-  border-radius: 99px;
-  background: var(--icon-hover-bg);
-  backdrop-filter: blur(12px);
+  background: var(--hover-bg);
   color: var(--white);
 }
 
@@ -1283,6 +1281,7 @@ video[controls]::-webkit-media-controls {
 }
 
 /* ===== MORE PANEL ===== */
+/* يظهر فوق خيارات المشغل (مثل باقي الأيقونات) دون إخفاء الأيقونات */
 .more-panel {
   position: absolute;
   left: 0;
@@ -1294,21 +1293,31 @@ video[controls]::-webkit-media-controls {
   pointer-events: none;
   transform: translateY(12px);
   transition:
-    opacity 0.25s ease,
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
   direction: rtl;
   font-family: var(--font-family-sans, "Thmanyah sans 1.2");
+  max-height: 60vh;
+  overflow: hidden;
 }
 
 .more-panel.show {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.more-panel.show.card-selected {
+  justify-content: flex-end;
 }
 
 .more-panel-inner {
   display: flex;
   flex-direction: column;
+  flex: 0 0 auto;
+  justify-content: flex-end;
   background: none;
   border-radius: 24px;
   padding: 12px 0 0;
@@ -1320,17 +1329,16 @@ video[controls]::-webkit-media-controls {
 
 .more-panel-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 12px;
   text-align: right;
   padding-inline: 24px;
   gap: 12px;
 }
 
-.more-panel-tabs {
+.more-panel-header-btns {
   display: flex;
-  align-items: center;
   gap: 12px;
 }
 
@@ -1355,25 +1363,28 @@ video[controls]::-webkit-media-controls {
   padding-inline: 16px;
 }
 
-.more-panel-collapse.btn {
-  width: 40px;
-  height: 40px;
-}
-
-.more-panel-collapse.btn svg {
-  width: 22px;
-  height: 22px;
-}
-
 .more-btn-primary {
+  border-radius: var(--radius-full, 512px);
   background: var(--components-button-secondary-btn-secondary-bg, #fff);
   color: #111;
 }
 
+.more-btn-primary:hover {
+  border-radius: var(--radius-full, 512px);
+  background: var(--components-button-secondary-btn-secondary-bg_hover, rgba(255, 255, 255, 0.85));
+}
+
 .more-btn-secondary {
-  background: var(--components-button-tertiary-btn-tertiary-bg, rgba(255, 255, 255, 0.12));
+  border-radius: var(--radius-full, 512px);
+  background: var(--alpha-alpha-black-45, rgba(0, 0, 0, 0.45));
   backdrop-filter: blur(10px);
   color: var(--white);
+}
+
+.more-btn-secondary:hover {
+  border-radius: var(--radius-full, 512px);
+  background: var(--alpha-alpha-black-65, rgba(0, 0, 0, 0.65));
+  backdrop-filter: blur(10px);
 }
 
 .secondary-chip.more-btn {
@@ -1389,43 +1400,6 @@ video[controls]::-webkit-media-controls {
   overflow-x: auto;
   padding-bottom: 24px;
   padding-inline: 24px;
-  scrollbar-width: none;
-}
-
-.more-cards:hover {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-}
-
-.more-cards::-webkit-scrollbar {
-  height: 0;
-}
-
-.more-cards:hover::-webkit-scrollbar {
-  height: 4px;
-}
-
-.more-cards::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 10px;
-  margin-inline: 24px;
-}
-
-.more-cards:hover::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.more-cards::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 10px;
-}
-
-.more-cards:hover::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.more-cards:hover::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
 }
 
 .more-actions {
@@ -1454,17 +1428,24 @@ video[controls]::-webkit-media-controls {
 }
 
 .more-panel.card-selected .more-panel-inner {
+  flex: 0 0 auto;
   flex-direction: row;
-  align-items: flex-start;
-  gap: 24px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
   padding-inline: 24px;
+  padding-bottom: 20px;
   width: 100%;
+  max-width: 100%;
 }
 
 .more-panel.card-selected .more-cards {
-  padding-bottom: 32px;
+  padding-bottom: 0;
   padding-inline: 0;
   overflow: visible;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .more-panel.card-selected .more-card:not(.is-selected) {
@@ -1474,11 +1455,22 @@ video[controls]::-webkit-media-controls {
 .more-panel.card-selected .more-card.is-selected {
   transform: none;
   transition: none;
+  flex-shrink: 0;
+  width: 360px;
+  max-width: 360px;
+}
+
+.more-panel.card-selected .more-card-image {
+  width: 340px;
+  height: 200px;
+  aspect-ratio: auto;
 }
 
 .more-panel.card-selected .more-actions {
   margin-top: 0;
   padding-inline: 0;
+  gap: 8px;
+  flex-shrink: 0;
   align-self: center;
 }
 
@@ -1512,7 +1504,7 @@ video[controls]::-webkit-media-controls {
   aspect-ratio: 151/85;
   border-radius: var(--radius-3xl, 24px);
   border: 1px solid var(--border-border-tertiary, rgba(255, 255, 255, 0.12));
-  background: var(--card-img) lightgray 50% / cover no-repeat;
+  background: var(--card-img) var(--background-bg-surface-raised, #1A1A1A) 50% / cover no-repeat;
   background-origin: border-box;
   background-clip: border-box;
   overflow: hidden;
@@ -1687,9 +1679,9 @@ video[controls]::-webkit-media-controls {
 
 @media (max-width: 480px) {
 
-  .btn .tip,
-  .pip-btn .tip {
-    display: none;
+  .popover-anchor .btn .tip,
+  #moreBtn .tip {
+    display: none !important;
   }
 }
 
@@ -1704,10 +1696,7 @@ video[controls]::-webkit-media-controls {
 }
 
 /* إخفاء شريط التقدم بسلاسة عند ظهور القوائم */
-.player.popover-open .progress-wrap,
-.player.icon-hover .progress-wrap,
-.player.more-open .progress-wrap,
-.player.more-peek .progress-wrap {
+.player.popover-open .progress-wrap {
   opacity: 0;
   pointer-events: none;
   transform: translateY(10px);
@@ -1734,6 +1723,7 @@ video[controls]::-webkit-media-controls {
   width: 26px;
   height: 26px;
 }
+
 .progress-wrap {
   width: 100%;
   padding: 4px 0 14px;
