@@ -428,15 +428,15 @@ video[controls]::-webkit-media-controls {
 .title-area {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0;
 }
 
 .title-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 54px;
-  height: 54px;
+  width: 50px;
+  height: 50px;
   padding: 4px;
   flex-shrink: 0;
   border-radius: 50%;
@@ -453,18 +453,18 @@ video[controls]::-webkit-media-controls {
 .title-icon::before {
   content: "";
   position: absolute;
-  inset: 2px;
+  inset: 4px;
   border-radius: 50%;
   background: var(--hover-bg);
   opacity: 0;
-  transform: scale(0.85);
+  transform: scale(0.9);
   transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: -1;
 }
 
 .title-area:hover .title-icon::before {
   opacity: 1;
-  transform: scale(1.1);
+  transform: scale(1);
 }
 
 .title-icon svg {
@@ -483,7 +483,7 @@ video[controls]::-webkit-media-controls {
   line-height: var(--font-headline-md-line-height, 24px);
   /* 100% */
   text-decoration: none;
-  padding: 15px 4px 15px 0;
+  padding: 15px 0 15px 0;
   border-radius: 30px;
   direction: rtl;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
@@ -672,6 +672,11 @@ video[controls]::-webkit-media-controls {
   min-width: 0;
 }
 
+/* تقليل المسافة بين الصوت وزر المباشر لتتساوى مع البقية */
+#audioAnchor + .live-btn {
+  margin-inline-start: -6px;
+}
+
 /* ===== BUTTON BASE ===== */
 .btn {
   background: none;
@@ -780,6 +785,24 @@ video[controls]::-webkit-media-controls {
   display: none !important;
 }
 
+/* أيقونة الجودة تبقى بحالة الهوفر عند الانتقال للخيارات (البوبوفر مفتوح) */
+.popover-anchor:has(.popover-panel.show) .btn {
+  color: var(--white);
+}
+.popover-anchor:has(.popover-panel.show) .btn::before {
+  opacity: 1;
+  transform: scale(1.22);
+}
+
+/* أيقونة المزيد تبقى بحالة الهوفر عند الانتقال للوحة المزيد */
+#player:has(.more-panel.show) #moreBtn {
+  color: var(--white);
+}
+#player:has(.more-panel.show) #moreBtn::before {
+  opacity: 1;
+  transform: scale(1.22);
+}
+
 .btn:hover .tip,
 .pip-btn:hover .tip,
 .close-btn:hover .tip {
@@ -799,7 +822,8 @@ video[controls]::-webkit-media-controls {
   align-items: center;
   border-radius: 9999px;
   padding: 0;
-  transition: background 0.2s ease, border-radius 0.2s ease;
+  background: transparent;
+  transition: background 0.45s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 .volume-group:hover {
@@ -811,8 +835,52 @@ video[controls]::-webkit-media-controls {
   display: none;
 }
 
+/* أيقونة الصوت تبقى بحالة الهوفر عند الانتقال للشريط (نحن ضمن المجموعة) */
+.volume-group:hover .btn,
 .volume-group .btn:hover {
   color: var(--white);
+}
+
+/* أيقونة الصوت الموحدة: أنيميشن سلس بين الحالات (High / Low / Muted) */
+.volume-group .btn {
+  position: relative;
+}
+
+.volume-group .volume-icon-unified {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.volume-group .vol-wave-inner {
+  opacity: 1;
+  transform-origin: 14px 14px;
+  transition: opacity 0.26s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.volume-group .btn.vol-state-muted .vol-wave-inner {
+  opacity: 0;
+}
+
+.volume-group .vol-wave-outer {
+  opacity: 1;
+  transform-origin: 12px 14px;
+  transform: scale(1);
+  transition: opacity 0.26s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.26s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.volume-group .btn.vol-state-low .vol-wave-outer,
+.volume-group .btn.vol-state-muted .vol-wave-outer {
+  opacity: 0;
+  transform: scale(0.82);
+}
+
+.volume-group .vol-mute-slash {
+  stroke-dasharray: 29;
+  stroke-dashoffset: 29;
+  transition: stroke-dashoffset 0.26s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+}
+.volume-group .btn.vol-state-muted .vol-mute-slash {
+  stroke-dashoffset: 0;
 }
 
 .vol-slider-wrap {
@@ -821,11 +889,12 @@ video[controls]::-webkit-media-controls {
   display: flex;
   align-items: center;
   margin: 0 0 0 -10px;
-  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: width 0.55s cubic-bezier(0.34, 1.35, 0.64, 1), margin 0.55s cubic-bezier(0.34, 1.35, 0.64, 1);
 }
 
 .volume-group:hover .vol-slider-wrap {
   width: 80px;
+  margin-right: 8px;
 }
 
 .vol-slider {
@@ -838,6 +907,17 @@ video[controls]::-webkit-media-controls {
   outline: none;
   cursor: pointer;
   margin: 0 10px 0 4px;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.33, 1, 0.68, 1) 0.12s, height 0.2s ease, border-radius 0.2s ease;
+}
+
+.volume-group:hover .vol-slider {
+  opacity: 1;
+}
+
+.vol-slider-wrap:hover .vol-slider {
+  height: 5px;
+  border-radius: 3px;
 }
 
 /* إخفاء دائرة التحكم؛ التحكم فقط عبر طبقة اللون الأبيض (الشريط) */

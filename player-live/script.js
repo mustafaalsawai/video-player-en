@@ -158,12 +158,11 @@ function updateVolBg() {
 }
 
 function updateVolumeIcon() {
-    const on = volumeBtn.querySelector('.icon-vol-on'), mid = volumeBtn.querySelector('.icon-vol-mid'), off = volumeBtn.querySelector('.icon-vol-off');
     const v = parseFloat(volSlider.value);
-    on.style.display = 'none'; mid.style.display = 'none'; off.style.display = 'none';
-    if (isMuted || v === 0) off.style.display = '';
-    else if (v <= 0.5) mid.style.display = '';
-    else on.style.display = '';
+    volumeBtn.classList.remove('vol-state-high', 'vol-state-low', 'vol-state-muted');
+    if (isMuted || v === 0) volumeBtn.classList.add('vol-state-muted');
+    else if (v <= 0.5) volumeBtn.classList.add('vol-state-low');
+    else volumeBtn.classList.add('vol-state-high');
 }
 
 function toggleMute() {

@@ -193,24 +193,11 @@
                     <div class="popover-anchor" id="audioAnchor">
                         <div class="volume-group" id="volumeGroup">
                             <button class="btn" id="volumeBtn">
-                                <svg class="icon-vol-on" width="36" height="36" viewBox="0 0 28 28" fill="none">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M13.039 3.393C14.353 2.422 16.21 3.361 16.211 4.992V22.594C16.211 24.225 14.353 25.164 13.039 24.193L3.807 17.375C1.398 15.595 1.398 11.991 3.807 10.211L13.039 3.393ZM14.141 4.767L14.079 4.8L4.847 11.619C3.385 12.7 3.385 14.886 4.847 15.967L14.079 22.786C14.236 22.902 14.461 22.79 14.461 22.594V4.992C14.46 4.82 14.289 4.713 14.141 4.767Z"
-                                        fill="white" />
-                                    <path
-                                        d="M20.322 5.337C20.663 4.996 21.217 4.996 21.559 5.337C26.23 10.008 26.23 17.584 21.559 22.255C21.217 22.596 20.663 22.596 20.322 22.255C19.98 21.913 19.98 21.359 20.322 21.017C24.309 17.03 24.309 10.562 20.322 6.574C19.98 6.233 19.98 5.679 20.322 5.337Z"
-                                        fill="white" />
-                                    <path
-                                        d="M18.714 9.279C19.056 8.938 19.61 8.938 19.951 9.279C22.445 11.773 22.445 15.818 19.951 18.313C19.61 18.654 19.056 18.654 18.714 18.313C18.373 17.971 18.372 17.417 18.714 17.075C20.525 15.265 20.525 12.327 18.714 10.516C18.372 10.175 18.372 9.621 18.714 9.279Z"
-                                        fill="white" />
-                                </svg>
-                                <svg class="icon-vol-mid" width="36" height="36" viewBox="0 0 24 24" fill="none" style="display:none">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11.2116 3.08573C12.3375 2.25328 13.9299 3.05828 13.9304 4.45584V19.5437C13.9301 20.9414 12.3375 21.7463 11.2116 20.9139L3.29856 15.0701C1.23339 13.544 1.23326 10.4554 3.29856 8.92948L11.2116 3.08573ZM12.156 4.26346L12.1032 4.29178L4.19016 10.1365C2.93656 11.0629 2.93668 12.9366 4.19016 13.8631L12.1032 19.7078C12.2377 19.8072 12.4301 19.7117 12.4304 19.5437V4.45584C12.43 4.30887 12.2827 4.21727 12.156 4.26346Z" fill="white"/>
-                                    <path d="M16.0759 8.13065C16.3688 7.83803 16.8436 7.83798 17.1365 8.13065C19.2743 10.2685 19.2741 13.7359 17.1365 15.8738C16.8436 16.1666 16.3688 16.1666 16.0759 15.8738C15.7832 15.5809 15.7831 15.1061 16.0759 14.8133C17.6278 13.2611 17.6279 10.7432 16.0759 9.1912C15.7832 8.89829 15.7831 8.42349 16.0759 8.13065Z" fill="white"/>
-                                </svg>
-                                <svg class="icon-vol-off" width="36" height="36" viewBox="0 0 24 24" fill="none"
-                                    style="display:none">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.9618 3.08576C14.0876 2.2535 15.6801 3.05837 15.6805 4.45587V8.2049L20.204 4.42462C20.5217 4.15915 20.995 4.20077 21.2606 4.51837C21.5262 4.83609 21.4834 5.30931 21.1659 5.57501L15.6805 10.16V19.5438C15.6802 20.9414 14.0877 21.7464 12.9618 20.9139L7.57409 16.9354L4.23132 19.7313C3.91364 19.9968 3.44039 19.955 3.17468 19.6375C2.90918 19.3198 2.95098 18.8466 3.26843 18.5809L6.33288 16.0184L5.0487 15.0701C2.98325 13.5441 2.98323 10.4555 5.0487 8.92951L12.9618 3.08576ZM8.75964 15.9451L13.8534 19.7078C13.9879 19.8072 14.1802 19.7117 14.1805 19.5438V11.4139L8.75964 15.9451ZM13.9061 4.26349L13.8534 4.29181L5.9403 10.1365C4.68653 11.063 4.68655 12.9367 5.9403 13.8631L7.51745 15.0281L14.1805 9.4588V4.45587C14.1801 4.30895 14.0328 4.21743 13.9061 4.26349Z" fill="white"/>
+                                <svg class="volume-icon-unified" width="36" height="36" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="vol-speaker" fill-rule="evenodd" clip-rule="evenodd" d="M13.039 3.393C14.353 2.422 16.21 3.361 16.211 4.992V22.594C16.211 24.225 14.353 25.164 13.039 24.193L3.807 17.375C1.398 15.595 1.398 11.991 3.807 10.211L13.039 3.393ZM14.141 4.767L14.079 4.8L4.847 11.619C3.385 12.7 3.385 14.886 4.847 15.967L14.079 22.786C14.236 22.902 14.461 22.79 14.461 22.594V4.992C14.46 4.82 14.289 4.713 14.141 4.767Z" fill="white"/>
+                                    <path class="vol-wave vol-wave-inner" d="M18.714 9.279C19.056 8.938 19.61 8.938 19.951 9.279C22.445 11.773 22.445 15.818 19.951 18.313C19.61 18.654 19.056 18.654 18.714 18.313C18.373 17.971 18.372 17.417 18.714 17.075C20.525 15.265 20.525 12.327 18.714 10.516C18.372 10.175 18.372 9.621 18.714 9.279Z" fill="white"/>
+                                    <path class="vol-wave vol-wave-outer" d="M20.322 5.337C20.663 4.996 21.217 4.996 21.559 5.337C26.23 10.008 26.23 17.584 21.559 22.255C21.217 22.596 20.663 22.596 20.322 22.255C19.98 21.913 19.98 21.359 20.322 21.017C24.309 17.03 24.309 10.562 20.322 6.574C19.98 6.233 19.98 5.679 20.322 5.337Z" fill="white"/>
+                                    <line class="vol-mute-slash" x1="22.6" y1="5.4" x2="1" y2="23.4" stroke="white" stroke-width="2.2" stroke-linecap="round"></line>
                                 </svg>
                                 <span class="tip">الصوت</span>
                             </button>
@@ -440,11 +427,11 @@
                 </div>
                 <div class="more-cards">
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah (5).jpg"
-                        data-related-img="../images/related/Thmanyah (1).jpg"
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah (5).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah (1).jpg"
                         data-video="../video/vid.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah (5).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah (5).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -452,11 +439,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah (6).jpg"
-                        data-related-img="../images/related/Thmanyah (2).jpg"
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah (6).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah (2).jpg"
                         data-video="../video/vid1.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah (6).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah (6).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -464,11 +451,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah (7).jpg"
-                        data-related-img="../images/related/Thmanyah (3).jpg"
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah (7).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah (3).jpg"
                         data-video="../video/vid.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah (7).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah (7).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -476,11 +463,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah Image (1).jpg"
-                        data-related-img="../images/related/Thmanyah (4).jpg"
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah Image (1).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah (4).jpg"
                         data-video="../video/vid1.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah Image (1).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah Image (1).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -488,11 +475,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah Image (2).jpg"
-                        data-related-img="../images/related/Thmanyah (8).jpg"
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah Image (2).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah (8).jpg"
                         data-video="../video/vid.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah Image (2).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah Image (2).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -500,11 +487,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thmanyah Image (3).jpg"
-                        data-related-img="../images/related/Thmanyah Image.jpg"
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thmanyah Image (3).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah Image.jpg"
                         data-video="../video/vid1.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thmanyah Image (3).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thmanyah Image (3).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -512,11 +499,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thumbnail (1).jpg"
-                        data-related-img="../images/related/Thmanyah.jpg"
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thumbnail (1).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/Thmanyah.jpg"
                         data-video="../video/vid.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thumbnail (1).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thumbnail (1).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
@@ -524,11 +511,11 @@
                         <div class="more-card-time">التاريخ او الوقت</div>
                     </button>
                     <button class="more-card" type="button"
-                        data-live-img="../images/sport/Thumbnail (2).jpg"
-                        data-related-img="../images/related/https___img.thmanyahplatform.com_original_3b9aca00la1i9asi27ic9j21hd0u1kcv.jpg"
+                        data-live-img="/Users/m/Downloads/web/images/sport/Thumbnail (2).jpg"
+                        data-related-img="/Users/m/Downloads/web/images/related/https___img.thmanyahplatform.com_original_3b9aca00la1i9asi27ic9j21hd0u1kcv.jpg"
                         data-video="../video/vid1.mp4">
                         <div class="more-card-image"
-                            style="--card-img: url('../images/sport/Thumbnail (2).jpg');">
+                            style="--card-img: url('/Users/m/Downloads/web/images/sport/Thumbnail (2).jpg');">
                             <span class="live-badge">مباشر</span>
                         </div>
                         <div class="more-card-meta">اسم البرنامج · مدة الفيديو</div>
